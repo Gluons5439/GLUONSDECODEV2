@@ -5,7 +5,7 @@ import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver.EncoderDirection;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver.GoBildaOdometryPods;
 
 public class Constants {
-    public static double kPow = 0;
+    public static double kPow = 1;
     public static double kP = 0;
     public static double kD = 0;
 
