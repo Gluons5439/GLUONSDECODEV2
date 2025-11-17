@@ -13,6 +13,8 @@ import org.firstinspires.ftc.teamcode.utils.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.utils.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.utils.subsystems.Turret;
 
+import java.util.Arrays;
+
 @Autonomous
 public class PedroTest extends CommandOpMode {
 
@@ -61,6 +63,7 @@ public class PedroTest extends CommandOpMode {
     @Override
     public void run() {
         drivetrain.follower.update();
+        telemetry.addData("debug", Arrays.toString(drivetrain.follower.debug()));
 //        if (turret.useFacingPoint) {
 //            turret.updateFacingPoint(snoopy.turretTrackX, snoopy.turretTrackY, drivetrain.follower.getPose());
 //        } else {
