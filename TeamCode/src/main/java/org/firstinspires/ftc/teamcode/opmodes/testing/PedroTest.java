@@ -31,24 +31,13 @@ public class PedroTest extends CommandOpMode {
         snoopy = new Snoopy(hardwareMap, Snoopy.MatchState.AUTO, Snoopy.Alliance.BLUE);
         drivetrain = new Drivetrain(hardwareMap);
         intake = new Intake(hardwareMap);
-//        shooter = new Shooter(hardwareMap);
+        shooter = new Shooter(hardwareMap);
         turret = new Turret(hardwareMap);
         paths = new Paths(drivetrain.follower);
 
         register(drivetrain, intake, shooter, turret);
 
         drivetrain.follower.setStartingPose(new Pose(24.000, 126.500, Math.toRadians(90)));
-
-//        shooter.setStopper(Shooter.stopperOpen);
-
-//        schedule( new SequentialCommandGroup(
-//                new InstantCommand(() -> turret.useFacingPoint = true),
-//                new FollowPathCommand(drivetrain.follower, paths.startToScore).alongWith(
-//                        new RunToVelocity(shooter, Shooter.maxVelo),
-//                        new InstantCommand(() -> shooter.setHood(Shooter.hoodMax))
-//                )
-//        ));
-
         schedule(new SequentialCommandGroup(
                 new FollowPathCommand(drivetrain.follower, paths.startToScore),
                 new FollowPathCommand(drivetrain.follower, paths.intakeGPP),
@@ -63,11 +52,8 @@ public class PedroTest extends CommandOpMode {
     @Override
     public void run() {
         drivetrain.follower.update();
-        telemetry.addData("debug", Arrays.toString(drivetrain.follower.debug()));
-//        if (turret.useFacingPoint) {
-//            turret.updateFacingPoint(snoopy.turretTrackX, snoopy.turretTrackY, drivetrain.follower.getPose());
-//        } else {
-//            turret.update(0);
-//        }
+        //telemetry.addData("debug", Arrays.toString(drivetrain.follower.debug()));
+        telemetry.addData("isBusy", drivetrain.follower.isBusy()? "Busy" : "Not Busy");
+        telemetry.update();
     }
 }

@@ -35,9 +35,9 @@ public class Drivetrain extends SubsystemBase {
 
     public void robotCentric(Gamepad gamepad1) {
         follower.setTeleOpDrive(
-                -gamepad1.right_stick_y,
-                -gamepad1.right_stick_x,
+                -gamepad1.left_stick_y,
                 -gamepad1.left_stick_x,
+                -gamepad1.right_stick_x,
                 true
         );
         follower.update();

@@ -27,7 +27,7 @@ public class TeleOp extends CommandOpMode {
         turret = new Turret(hardwareMap);
         drivetrain = new Drivetrain(hardwareMap);
         intake = new Intake(hardwareMap);
-//        shooter = new Shooter(hardwareMap);
+        shooter = new Shooter(hardwareMap);
 
         register(turret, drivetrain, intake);
     }
@@ -41,14 +41,15 @@ public class TeleOp extends CommandOpMode {
         }
         intake.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
 
-        if (gamepad1.cross) {
-            shooter.setHood(Shooter.hoodMax);
-            shooter.setStopper(Shooter.stopperOpen);
+        if (gamepad1.circle) {
+            shooter.setHood(Shooter.hoodShootNear);
             shooter.setTargetVelo(Shooter.maxVelo);
         } else if (gamepad1.triangle) {
             shooter.setHood(Shooter.hoodMin);
             shooter.setStopper(Shooter.stopperClosed);
             shooter.setTargetVelo(0);
+        } else if (gamepad1.cross){
+            shooter.setStopper(Shooter.stopperOpen);
         }
         shooter.update();
 

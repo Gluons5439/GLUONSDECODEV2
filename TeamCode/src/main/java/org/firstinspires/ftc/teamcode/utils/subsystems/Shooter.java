@@ -26,6 +26,8 @@ public class Shooter extends SubsystemBase {
     public static double hoodMin = 0.267;
     public static double hoodMax = 0.16;
 
+    public static double hoodShootNear = hoodMax;
+
     public static double maxVelo = 1600;
 
     public Shooter(HardwareMap hMap) {
@@ -40,6 +42,8 @@ public class Shooter extends SubsystemBase {
         shooter1.setInverted(true);
         controller.setTolerance(tolerance);
         controller.setSetPoint(0);
+        stopper.set(stopperClosed);
+        hood.set(hoodMin);
     }
 
     public void update() {
