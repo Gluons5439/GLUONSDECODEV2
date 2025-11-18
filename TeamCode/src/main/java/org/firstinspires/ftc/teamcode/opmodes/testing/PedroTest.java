@@ -3,11 +3,13 @@ package org.firstinspires.ftc.teamcode.opmodes.testing;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
+import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
 import org.firstinspires.ftc.teamcode.utils.Paths;
 import org.firstinspires.ftc.teamcode.utils.Snoopy;
+import org.firstinspires.ftc.teamcode.utils.commands.RunToVelocity;
 import org.firstinspires.ftc.teamcode.utils.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.utils.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.utils.subsystems.Shooter;
@@ -39,21 +41,15 @@ public class PedroTest extends CommandOpMode {
 
         drivetrain.follower.setStartingPose(new Pose(24.000, 126.500, Math.toRadians(90)));
         schedule(new SequentialCommandGroup(
-                new FollowPathCommand(drivetrain.follower, paths.startToScore),
-                new FollowPathCommand(drivetrain.follower, paths.intakeGPP),
-                new FollowPathCommand(drivetrain.follower, paths.scoreGPP),
-                new FollowPathCommand(drivetrain.follower, paths.intakePGP1),
-                new FollowPathCommand(drivetrain.follower, paths.intakePGP2),
-                new FollowPathCommand(drivetrain.follower, paths.scorePGP),
-                new FollowPathCommand(drivetrain.follower, paths.park)
+                new RunToVelocity(shooter, 500)
         ));
     }
 
     @Override
     public void run() {
         drivetrain.follower.update();
-        //telemetry.addData("debug", Arrays.toString(drivetrain.follower.debug()));
         telemetry.addData("isBusy", drivetrain.follower.isBusy()? "Busy" : "Not Busy");
         telemetry.update();
+        super.run();
     }
 }
