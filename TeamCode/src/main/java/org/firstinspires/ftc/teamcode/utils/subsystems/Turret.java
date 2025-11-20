@@ -20,6 +20,8 @@ public class Turret extends SubsystemBase {
     public PIDFController controller = new PIDFController(p, 0, d, 0);
     public double tolerance = 1;
 
+    public static boolean enableAim = false;
+
     public Turret(HardwareMap hMap) {
         motor = new Motor(hMap, "turret", Motor.GoBILDA.BARE);
         motor.stopAndResetEncoder();
@@ -39,15 +41,21 @@ public class Turret extends SubsystemBase {
 
     public void update() {
 
-        Pose pos = Snoopy.drivetrain.follower.getPose();
+        if(enableAim){
+            Pose pos = Snoopy.drivetrain.follower.getPose();
 
-        double deltaX = Snoopy.goal.getX() - pos.getX();
-        double deltaY = Snoopy.goal.getY() - pos.getY();
+            double deltaX = Snoopy.goal.getX() - pos.getX();
+            double deltaY = Snoopy.goal.getY() - pos.getY();
 
-        double targetAngle = Math.atan(deltaY/deltaX) + Math.PI;
+            double targetAngle = Math.atan(deltaY/deltaX) + Math.PI;
 
-        double robotAngle = Snoopy.drivetrain.follower.getHeading();
-        setAngle(targetAngle - robotAngle);
+            double robotAngle = Snoopy.drivetrain.follower.getHeading();
+            setAngle(targetAngle - robotAngle);
+        }else{
+            setAngle(0);
+        }
+
+
         motor.set(controller.calculate(getAngle()));
     }
 
