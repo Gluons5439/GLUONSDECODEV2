@@ -25,17 +25,13 @@ public class BlueAuto extends CommandOpMode {
 
             new FollowPathCommand(Snoopy.drivetrain.follower, paths.startToScore),
 
-            new InstantCommand(Snoopy::prime),
-            new WaitCommand(2000),
-            new InstantCommand(Snoopy::shoot),
-            new WaitCommand(1500),
+            Snoopy.shootOptimized(),
 
             new InstantCommand(() -> {
-                Snoopy.reset();
                 Snoopy.drivetrain.follower.setMaxPower(0.5);
                 Snoopy.intake.setPower(1);
-                Snoopy.intake.setMinPower(1);
             }),
+
             new FollowPathCommand(Snoopy.drivetrain.follower, paths.intakeGPP1),
             new FollowPathCommand(Snoopy.drivetrain.follower, paths.intakeGPP2),
             new WaitCommand(500),
@@ -43,16 +39,11 @@ public class BlueAuto extends CommandOpMode {
             new InstantCommand(() -> Snoopy.drivetrain.follower.setMaxPower(0.6)),
             new FollowPathCommand(Snoopy.drivetrain.follower, paths.scoreGPP),
 
-            new InstantCommand(Snoopy::prime),
-            new WaitCommand(2000),
-            new InstantCommand(Snoopy::shoot),
-            new WaitCommand(1500),
+            Snoopy.shootOptimized(),
 
             new InstantCommand(() -> {
-                Snoopy.reset();
                 Snoopy.drivetrain.follower.setMaxPower(0.5);
                 Snoopy.intake.setPower(1);
-                Snoopy.intake.setMinPower(1);
             }),
             new FollowPathCommand(Snoopy.drivetrain.follower, paths.intakePGP1),
             new FollowPathCommand(Snoopy.drivetrain.follower, paths.intakePGP2),
@@ -62,16 +53,11 @@ public class BlueAuto extends CommandOpMode {
             new InstantCommand(() -> Snoopy.drivetrain.follower.setMaxPower(0.6)),
             new FollowPathCommand(Snoopy.drivetrain.follower, paths.scorePGP),
 
-            new InstantCommand(Snoopy::prime),
-            new WaitCommand(2000),
-            new InstantCommand(Snoopy::shoot),
-            new WaitCommand(1500),
+            Snoopy.shootOptimized(),
 
 
             new InstantCommand(() -> {
-                Snoopy.reset();
                 Snoopy.drivetrain.follower.setMaxPower(0.6);
-                Snoopy.intake.setMinPower(0);
             }),
             new FollowPathCommand(Snoopy.drivetrain.follower, paths.park)
         ));

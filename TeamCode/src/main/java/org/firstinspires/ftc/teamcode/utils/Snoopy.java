@@ -1,8 +1,13 @@
 package org.firstinspires.ftc.teamcode.utils;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
+import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
+import com.seattlesolvers.solverslib.command.WaitCommand;
+import com.seattlesolvers.solverslib.command.WaitUntilCommand;
 import com.seattlesolvers.solverslib.geometry.Vector2d;
 
 import org.firstinspires.ftc.teamcode.utils.subsystems.Drivetrain;
@@ -10,6 +15,7 @@ import org.firstinspires.ftc.teamcode.utils.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.utils.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.utils.subsystems.Turret;
 
+@Configurable
 public class Snoopy {
     public enum MatchState {
         AUTO,
@@ -22,7 +28,7 @@ public class Snoopy {
 
     public static final Pose BLUE_START_POSE = new Pose(24, 126.5, Math.toRadians(90));
     public static final Pose RED_START_POSE = new Pose(144- BLUE_START_POSE.getX(), BLUE_START_POSE.getY(), Math.toRadians(90));
-    public static final Vector2d BLUE_GOAL = new Vector2d(0, 144);
+    public static final Vector2d BLUE_GOAL = new Vector2d(8, 144);
     public static final Vector2d RED_GOAL = new Vector2d(144- BLUE_GOAL.getX(), BLUE_GOAL.getY());
     public static MatchState matchState;
     public static Alliance alliance;
@@ -32,6 +38,9 @@ public class Snoopy {
     public static Shooter shooter;
     public static Pose startPose;
     public static Vector2d goal;
+
+    public static int delay1 = 200;
+    public static int delay2 = 350;
 
     public static void init(HardwareMap hardwareMap, MatchState matchState, Alliance alliance) {
         Snoopy.matchState = matchState;
@@ -56,8 +65,6 @@ public class Snoopy {
         turret.update();
         intake.update();
         shooter.update();
-        shooter.controller.setP(Shooter.P);
-        shooter.controller.setF(Shooter.F);
     }
 
     public static void reset(){
@@ -67,10 +74,9 @@ public class Snoopy {
         shooter.closeStopper();
         shooter.resetHood();
     }
-
     public static void prime(){
         turret.enableAim = true;
-        intake.setMinPower(0);
+        intake.setMinPower(0.65);
         intake.setPower(0);
         shooter.setVelocity(Shooter.VELO_NEAR);
         shooter.closeStopper();
@@ -84,4 +90,26 @@ public class Snoopy {
         shooter.openStopper();
         shooter.raiseHood();
     }
+
+    public static InstantCommand reset = new InstantCommand(Snoopy::reset);
+    public static InstantCommand prime = new InstantCommand(Snoopy::prime);
+    public static InstantCommand shoot = new InstantCommand(Snoopy::shoot);
+
+    public static SequentialCommandGroup shootOptimized() {
+        return new SequentialCommandGroup(
+                new InstantCommand(Snoopy::prime),
+                new WaitUntilCommand(() -> Snoopy.shooter.controller.atSetPoint()),
+                new InstantCommand(Snoopy::shoot),
+                new WaitCommand(delay1),
+                new InstantCommand(Snoopy::prime),
+                new WaitCommand(delay2),
+                new InstantCommand(Snoopy::shoot),
+                new WaitCommand(delay1),
+                new InstantCommand(Snoopy::prime),
+                new WaitCommand(delay2),
+                new InstantCommand(Snoopy::shoot),
+                new WaitCommand(750),
+                new InstantCommand(Snoopy::reset)
+        );
+    };
 }

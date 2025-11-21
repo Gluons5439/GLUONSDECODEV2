@@ -55,7 +55,8 @@ public class Turret extends SubsystemBase {
             setAngle(0);
         }
 
-
+        controller.setP(p);
+        controller.setD(d);
         motor.set(controller.calculate(getAngle()));
     }
 
