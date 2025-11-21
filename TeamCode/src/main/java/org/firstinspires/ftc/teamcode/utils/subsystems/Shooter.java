@@ -14,7 +14,7 @@ public class Shooter extends SubsystemBase {
     public ServoEx hood;
     public ServoEx stopper;
 
-    public static double P = 0.004;
+    public static double P = 0.006;
     public static double D = 0.0;
     public static double F = 0.0008;
     public PIDFController controller = new PIDFController(P, 0, D, F);
@@ -25,7 +25,7 @@ public class Shooter extends SubsystemBase {
     public static double HOOD_MIN = 0.267;
     public static double HOOD_MAX = 0.16;
 
-    public static double HOOD_NEAR = .65;
+    public static double HOOD_NEAR = .4;
 
     public static final double MAX_VELO = 1600;
 
@@ -49,7 +49,13 @@ public class Shooter extends SubsystemBase {
     public void update() {
         double velocity = getVelocity();
         double power = controller.calculate(velocity);
-        setPower(Math.signum(power) * Math.sqrt(power));
+        setPower(power);
+
+        controller.setP(P);
+        controller.setD(D);
+        controller.setF(F);
+
+        VELO_NEAR = MAX_VELO * multiplier;
     }
     public void setVelocity(double velocity) {
         controller.setSetPoint(velocity);

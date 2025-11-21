@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.utils;
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
@@ -28,7 +29,7 @@ public class Snoopy {
 
     public static final Pose BLUE_START_POSE = new Pose(24, 126.5, Math.toRadians(90));
     public static final Pose RED_START_POSE = new Pose(144- BLUE_START_POSE.getX(), BLUE_START_POSE.getY(), Math.toRadians(90));
-    public static final Vector2d BLUE_GOAL = new Vector2d(8, 144);
+    public static final Vector2d BLUE_GOAL = new Vector2d(0, 144);
     public static final Vector2d RED_GOAL = new Vector2d(144- BLUE_GOAL.getX(), BLUE_GOAL.getY());
     public static MatchState matchState;
     public static Alliance alliance;
@@ -57,7 +58,7 @@ public class Snoopy {
 
         CommandScheduler.getInstance().registerSubsystem(drivetrain, turret, intake, shooter);
 
-        reset();
+        CommandScheduler.getInstance().schedule(reset());
     }
 
     public static void update(){
@@ -67,49 +68,51 @@ public class Snoopy {
         shooter.update();
     }
 
-    public static void reset(){
-        turret.enableAim = false;
-        intake.setMinPower(0);
-        shooter.setVelocity(0);
-        shooter.closeStopper();
-        shooter.resetHood();
+    public static InstantCommand reset() {
+        return new InstantCommand(() -> {
+            turret.enableAim = false;
+            intake.setMinPower(0);
+            shooter.setVelocity(0);
+            shooter.closeStopper();
+            shooter.resetHood();
+        });
     }
-    public static void prime(){
-        turret.enableAim = true;
-        intake.setMinPower(0.65);
-        intake.setPower(0);
-        shooter.setVelocity(Shooter.VELO_NEAR);
-        shooter.closeStopper();
-        shooter.raiseHood();
+    public static InstantCommand prime() {
+        return new InstantCommand(() -> {
+            turret.enableAim = true;
+            intake.setMinPower(0);
+            intake.setPower(0);
+            shooter.setVelocity(Shooter.VELO_NEAR);
+            shooter.closeStopper();
+            shooter.raiseHood();
+        });
     }
+    public static Command shoot(){
 
-    public static void shoot(){
-        turret.enableAim = true;
-        intake.setMinPower(1);
-        shooter.setVelocity(Shooter.VELO_NEAR);
-        shooter.openStopper();
-        shooter.raiseHood();
-    }
+        return new SequentialCommandGroup(
+                new WaitUntilCommand(() -> Snoopy.shooter.controller.atSetPoint()),
+                new InstantCommand(() -> {
+                    turret.enableAim = true;
+                    intake.setMinPower(1);
+                    shooter.setVelocity(Shooter.VELO_NEAR);
+                    shooter.openStopper();
+                    shooter.raiseHood();
+                }),
+                new WaitUntilCommand(() -> Math.abs(Snoopy.shooter.controller.getPositionError()) > 100)
 
-    public static InstantCommand reset = new InstantCommand(Snoopy::reset);
-    public static InstantCommand prime = new InstantCommand(Snoopy::prime);
-    public static InstantCommand shoot = new InstantCommand(Snoopy::shoot);
+        );
+    }
 
     public static SequentialCommandGroup shootOptimized() {
         return new SequentialCommandGroup(
-                new InstantCommand(Snoopy::prime),
+                prime(),
+                shoot(),
+                prime(),
+                shoot(),
+                prime(),
+                shoot(),
                 new WaitUntilCommand(() -> Snoopy.shooter.controller.atSetPoint()),
-                new InstantCommand(Snoopy::shoot),
-                new WaitCommand(delay1),
-                new InstantCommand(Snoopy::prime),
-                new WaitCommand(delay2),
-                new InstantCommand(Snoopy::shoot),
-                new WaitCommand(delay1),
-                new InstantCommand(Snoopy::prime),
-                new WaitCommand(delay2),
-                new InstantCommand(Snoopy::shoot),
-                new WaitCommand(750),
-                new InstantCommand(Snoopy::reset)
+                reset()
         );
     };
 }

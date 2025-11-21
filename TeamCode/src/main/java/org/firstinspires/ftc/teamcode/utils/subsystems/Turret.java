@@ -15,8 +15,8 @@ import org.firstinspires.ftc.teamcode.utils.Snoopy;
 public class Turret extends SubsystemBase {
     public Motor motor;
     public double ticksPerRadian = 216.2809573;
-    public static double p = 1;
-    public static double d = 0;
+    public static double p = 3;
+    public static double d = .03;
     public PIDFController controller = new PIDFController(p, 0, d, 0);
     public double tolerance = 1;
 
