@@ -17,75 +17,94 @@ public class Paths {
     public PathChain scorePGP;
     public PathChain park;
 
-    public Pose shootingPose = new Pose(32,112, Math.toRadians(90));
+    public Pose startPose;
+    public Pose shootingPose = new Pose(32,112, Math.toRadians(180));
+    public Pose intakeGPP1Pose = new Pose(45, 84, shootingPose.getHeading());
+    public Pose intakeGPP2Pose = new Pose(17, 84, shootingPose.getHeading());
+    public Pose intakePGP1Pose = new Pose(45, 60, shootingPose.getHeading());
+    public Pose intakePGP2Pose = new Pose(8.5, 60, shootingPose.getHeading());
+    public Pose scorePGPControl = new Pose(49.627, 54.717);
+    public Pose parkPose = new Pose(22, 72, Math.toRadians(90));
 
-    public Paths(Follower follower) {
+    public Paths(Follower follower, Snoopy.Alliance alliance) {
+        startPose = Snoopy.startPose;
+        if (alliance == Snoopy.Alliance.RED) {
+            shootingPose = shootingPose.mirror();
+            intakeGPP1Pose = intakeGPP1Pose.mirror();
+            intakeGPP2Pose = intakeGPP2Pose.mirror();
+            intakePGP1Pose = intakePGP1Pose.mirror();
+            intakePGP2Pose = intakePGP2Pose.mirror();
+            scorePGPControl = scorePGPControl.mirror();
+            parkPose = parkPose.mirror();
+        }
+
         startToScore = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(24.000, 126.500), new Pose(32.000, 112.000))
+                        new BezierLine(startPose, shootingPose)
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(180))
+                .setLinearHeadingInterpolation(startPose.getHeading(), shootingPose.getHeading())
                 .build();
 
         intakeGPP1 = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(32.000, 112.000), new Pose(45.000, 84.000))
+                        new BezierLine(shootingPose, intakeGPP1Pose)
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setConstantHeadingInterpolation(shootingPose.getHeading())
                 .build();
 
         intakeGPP2 = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(45.000, 84.000), new Pose(17.000, 84.000))
+                        new BezierLine(intakeGPP1Pose, intakeGPP2Pose)
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setConstantHeadingInterpolation(shootingPose.getHeading())
                 .build();
 
         scoreGPP = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(17.000, 84.000), new Pose(32.000, 112.000))
+                        new BezierLine(intakeGPP2Pose, shootingPose)
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setConstantHeadingInterpolation(shootingPose.getHeading())
                 .build();
 
         intakePGP1 = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(32.000, 112.000), new Pose(45.000, 60.000))
+                        new BezierLine(shootingPose, intakePGP1Pose)
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setConstantHeadingInterpolation(shootingPose.getHeading())
                 .build();
 
         intakePGP2 = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(45.000, 60.000), new Pose(8.500, 60.000))
+                        new BezierLine(intakePGP1Pose, intakePGP2Pose)
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setConstantHeadingInterpolation(shootingPose.getHeading())
                 .build();
 
         scorePGP = follower
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(8.500, 60.000),
-                                new Pose(49.627, 54.717),
-                                new Pose(32.000, 112.000)
+                                intakePGP2Pose,
+                                scorePGPControl,
+                                shootingPose
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setConstantHeadingInterpolation(shootingPose.getHeading())
                 .build();
 
         park = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(32.000, 112.000), new Pose(22.000, 72.000))
+                        new BezierLine(shootingPose, parkPose)
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(90))
+                .setLinearHeadingInterpolation(shootingPose.getHeading(), parkPose.getHeading())
                 .build();
+
     }
 }

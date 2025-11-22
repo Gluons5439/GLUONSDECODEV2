@@ -5,6 +5,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
+import com.seattlesolvers.solverslib.command.ConditionalCommand;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
@@ -15,6 +16,8 @@ import org.firstinspires.ftc.teamcode.utils.subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.utils.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.utils.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.utils.subsystems.Turret;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Configurable
 public class Snoopy {
@@ -28,9 +31,9 @@ public class Snoopy {
     }
 
     public static final Pose BLUE_START_POSE = new Pose(24, 126.5, Math.toRadians(90));
-    public static final Pose RED_START_POSE = new Pose(144- BLUE_START_POSE.getX(), BLUE_START_POSE.getY(), Math.toRadians(90));
+    public static final Pose RED_START_POSE = new Pose(144-BLUE_START_POSE.getX(), BLUE_START_POSE.getY(), Math.toRadians(90));
     public static final Vector2d BLUE_GOAL = new Vector2d(0, 144);
-    public static final Vector2d RED_GOAL = new Vector2d(144- BLUE_GOAL.getX(), BLUE_GOAL.getY());
+    public static final Vector2d RED_GOAL = new Vector2d(144, 144);
     public static MatchState matchState;
     public static Alliance alliance;
     public static Drivetrain drivetrain;
@@ -53,6 +56,8 @@ public class Snoopy {
         turret = new Turret(hardwareMap);
         intake = new Intake(hardwareMap);
         shooter = new Shooter(hardwareMap);
+
+        Storage.alliance = alliance;
 
         Snoopy.drivetrain.follower.setStartingPose(matchState == MatchState.AUTO ? startPose : Storage.pose);
 
@@ -77,6 +82,7 @@ public class Snoopy {
             shooter.resetHood();
         });
     }
+
     public static InstantCommand prime() {
         return new InstantCommand(() -> {
             turret.enableAim = true;
@@ -88,7 +94,7 @@ public class Snoopy {
         });
     }
     public static Command shoot(){
-
+        AtomicBoolean usedTimeout = new AtomicBoolean(false);
         return new SequentialCommandGroup(
                 new WaitUntilCommand(() -> Snoopy.shooter.controller.atSetPoint()),
                 new InstantCommand(() -> {
@@ -98,8 +104,23 @@ public class Snoopy {
                     shooter.openStopper();
                     shooter.raiseHood();
                 }),
-                new WaitUntilCommand(() -> Math.abs(Snoopy.shooter.controller.getPositionError()) > 100)
-
+                new WaitUntilCommand(() -> Math.abs(Snoopy.shooter.controller.getPositionError()) > 100).raceWith(new WaitCommand(1200).whenFinished(() -> usedTimeout.set(true))),
+                new ConditionalCommand(
+                        new SequentialCommandGroup(
+                                new InstantCommand(() -> {
+                                    intake.setMinPower(-1);
+                                    intake.setPower(-1);
+                                }),
+                                new WaitCommand(150),
+                                new InstantCommand(() -> {
+                                    intake.setPower(1);
+                                    intake.setMinPower(1);
+                                }),
+                                new WaitCommand(150)
+                        ),
+                        new InstantCommand(),
+                    usedTimeout::get
+                )
         );
     }
 

@@ -5,8 +5,6 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
-import com.seattlesolvers.solverslib.geometry.Pose2d;
-import com.seattlesolvers.solverslib.geometry.Vector2d;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 
 import org.firstinspires.ftc.teamcode.utils.Snoopy;
@@ -47,7 +45,7 @@ public class Turret extends SubsystemBase {
             double deltaX = Snoopy.goal.getX() - pos.getX();
             double deltaY = Snoopy.goal.getY() - pos.getY();
 
-            double targetAngle = Math.atan(deltaY/deltaX) + Math.PI;
+            double targetAngle = Math.atan2(deltaY, deltaX);
 
             double robotAngle = Snoopy.drivetrain.follower.getHeading();
             setAngle(targetAngle - robotAngle);

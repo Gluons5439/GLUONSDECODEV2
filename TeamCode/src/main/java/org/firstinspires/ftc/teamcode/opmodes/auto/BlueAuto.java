@@ -18,7 +18,7 @@ public class BlueAuto extends CommandOpMode {
     @Override
     public void initialize() {
         Snoopy.init(hardwareMap, Snoopy.MatchState.AUTO, Snoopy.Alliance.BLUE);
-        paths = new Paths(Snoopy.drivetrain.follower);
+        paths = new Paths(Snoopy.drivetrain.follower, Snoopy.Alliance.BLUE);
         Snoopy.drivetrain.follower.setMaxPower(0.7);
 
         schedule(new SequentialCommandGroup(
@@ -27,12 +27,9 @@ public class BlueAuto extends CommandOpMode {
 
             Snoopy.shootOptimized(),
 
-            new InstantCommand(() -> {
-                Snoopy.drivetrain.follower.setMaxPower(0.5);
-                Snoopy.intake.setPower(1);
-            }),
-
+            new InstantCommand(() -> Snoopy.drivetrain.follower.setMaxPower(0.5)),
             new FollowPathCommand(Snoopy.drivetrain.follower, paths.intakeGPP1),
+            new InstantCommand(() -> Snoopy.intake.setPower(1)),
             new FollowPathCommand(Snoopy.drivetrain.follower, paths.intakeGPP2),
             new WaitCommand(500),
 
@@ -41,11 +38,9 @@ public class BlueAuto extends CommandOpMode {
 
             Snoopy.shootOptimized(),
 
-            new InstantCommand(() -> {
-                Snoopy.drivetrain.follower.setMaxPower(0.5);
-                Snoopy.intake.setPower(1);
-            }),
+            new InstantCommand(() -> Snoopy.drivetrain.follower.setMaxPower(0.5)),
             new FollowPathCommand(Snoopy.drivetrain.follower, paths.intakePGP1),
+            new InstantCommand(() -> Snoopy.intake.setPower(1)),
             new FollowPathCommand(Snoopy.drivetrain.follower, paths.intakePGP2),
             new WaitCommand(500),
 
@@ -58,6 +53,8 @@ public class BlueAuto extends CommandOpMode {
 
             new InstantCommand(() -> {
                 Snoopy.drivetrain.follower.setMaxPower(0.6);
+                Snoopy.intake.setPower(0);
+                Snoopy.intake.setMinPower(0);
             }),
             new FollowPathCommand(Snoopy.drivetrain.follower, paths.park)
         ));
