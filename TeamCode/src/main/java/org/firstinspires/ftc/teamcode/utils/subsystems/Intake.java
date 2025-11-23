@@ -26,6 +26,12 @@ public class Intake extends SubsystemBase {
     }
 
     public void update(){
-        intake.set(Math.max(power, minPower));
+        double pow = Math.max(Math.abs(power), Math.abs(minPower));
+        if(pow == Math.abs(minPower)){
+            intake.set(minPower);
+        }else {
+            intake.set(power);
+        }
+
     }
 }

@@ -21,7 +21,7 @@ public class Shooter extends SubsystemBase {
     public static double TOLERANCE = 60;
 
     public static double STOPPER_OPEN = 0.35;
-    public static double STOPPER_CLOSED = 0.45;
+    public static double STOPPER_CLOSED = 0.458;
     public static double HOOD_MIN = 0.267;
     public static double HOOD_MAX = 0.16;
 

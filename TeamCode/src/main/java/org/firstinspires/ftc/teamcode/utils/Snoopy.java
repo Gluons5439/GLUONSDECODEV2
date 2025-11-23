@@ -104,7 +104,7 @@ public class Snoopy {
                     shooter.openStopper();
                     shooter.raiseHood();
                 }),
-                new WaitUntilCommand(() -> Math.abs(Snoopy.shooter.controller.getPositionError()) > 100).raceWith(new WaitCommand(1200).whenFinished(() -> usedTimeout.set(true))),
+                new WaitUntilCommand(() -> Math.abs(Snoopy.shooter.controller.getPositionError()) > 80).raceWith(new WaitCommand(1200).whenFinished(() -> usedTimeout.set(true))),
                 new ConditionalCommand(
                         new SequentialCommandGroup(
                                 new InstantCommand(() -> {

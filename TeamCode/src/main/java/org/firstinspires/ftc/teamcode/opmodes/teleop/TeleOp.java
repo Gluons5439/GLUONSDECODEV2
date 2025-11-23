@@ -11,6 +11,7 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.utils.Snoopy;
 import org.firstinspires.ftc.teamcode.utils.Storage;
+import org.firstinspires.ftc.teamcode.utils.subsystems.Shooter;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
 @Configurable
@@ -75,6 +76,11 @@ public class TeleOp extends CommandOpMode {
                             Snoopy.intake.setMinPower(0);
                         })
                 ));
+
+        toolOp.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+                .whenPressed(
+                        new InstantCommand(() -> Snoopy.shooter.openStopper())
+                );
     }
 
     public void run() {
