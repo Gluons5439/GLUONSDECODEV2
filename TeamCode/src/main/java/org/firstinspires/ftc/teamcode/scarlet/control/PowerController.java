@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.scarlet;
 
-public class PowerController {
+public class PowerController implements Controller {
     private double kPow;
     private double target;
     private double tolerance;
@@ -16,6 +16,15 @@ public class PowerController {
         double error = target - pos;
         double output = Math.pow(Math.abs(error * kPow), power);
         return Math.copySign(output, error);
+    }
+
+    public double calculate(double pos, double target) {
+        setTarget(target);
+        return calculate(pos);
+    }
+
+    public boolean atTarget() {
+        return atTarget(target);
     }
 
     public boolean atTarget(double pos) { return Math.abs(target - pos) < tolerance; }
@@ -34,5 +43,9 @@ public class PowerController {
 
     public double getTarget() {
         return target;
+    }
+
+    public void reset() {
+        
     }
 }

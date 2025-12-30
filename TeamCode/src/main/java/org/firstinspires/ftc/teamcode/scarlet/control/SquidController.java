@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.scarlet;
 
-public class SquidController {
+public class SquidController implements Controller {
     public double kSq;
-    public double target;
-    public double tolerance;
+    private double target;
+    private double tolerance;
 
     public SquidController(double kSq, double tolerance) {
         this.kSq = kSq;
@@ -12,14 +12,31 @@ public class SquidController {
 
     public double calculate(double pos) { return Math.sqrt(Math.abs((target - pos) * kSq)) * Math.signum(target - pos); }
 
+    @Override
+    public double calculate(double pos, double target) {
+        setTarget(target);
+        return calculate(pos);
+    }
+
+    @Override
+    public boolean atTarget() {
+        return atTarget(target);
+    }
+
     public boolean atTarget(double pos) { return Math.abs(target - pos) < tolerance; }
 
     public void setTarget(double target) {
         this.target = target;
     }
 
-    public void setKSq(double kSq) {
-        this.kSq = kSq;
+    @Override
+    public void setTolerance(double tol) {
+        tolerance = tol;
+    }
+
+    @Override
+    public void reset() {
+
     }
 
     public double getTarget() {
