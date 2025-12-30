@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.scarlet;
+package org.firstinspires.ftc.teamcode.scarlet.control;
 
 public class PIDFController implements Controller {
     public double p;
@@ -20,13 +20,7 @@ public class PIDFController implements Controller {
         this.f = kF;
     }
 
-    public double calculate(double pos, double target) {
-        setTarget(target);
-        return calculate(pos);
-    }
-
-    public double calculate(double pos) {
-        double error = target - pos;
+    public double calculate(double error) {
         double currentTime = System.currentTimeMillis();
 
         if (lastTime == 0) {
@@ -47,6 +41,13 @@ public class PIDFController implements Controller {
                 + (i * integral)
                 + (d * derivative)
                 + (f * target);
+    }
+
+    public void setConstants(double... constants) {
+        p = constants[0];
+        i = constants[1];
+        d = constants[2];
+        f = constants[3];
     }
 
     @Override

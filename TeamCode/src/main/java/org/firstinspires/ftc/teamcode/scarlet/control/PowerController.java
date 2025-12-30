@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.scarlet;
+package org.firstinspires.ftc.teamcode.scarlet.control;
 
 public class PowerController implements Controller {
     private double kPow;
@@ -12,15 +12,14 @@ public class PowerController implements Controller {
         this.power = power;
     }
 
-    public double calculate(double pos) {
-        double error = target - pos;
+    public double calculate(double error) {
         double output = Math.pow(Math.abs(error * kPow), power);
         return Math.copySign(output, error);
     }
 
-    public double calculate(double pos, double target) {
-        setTarget(target);
-        return calculate(pos);
+    public void setConstants(double... constants) {
+        kPow = constants[0];
+        power = constants[1];
     }
 
     public boolean atTarget() {
@@ -46,6 +45,6 @@ public class PowerController implements Controller {
     }
 
     public void reset() {
-        
+
     }
 }

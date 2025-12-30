@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.scarlet;
+package org.firstinspires.ftc.teamcode.scarlet.control;
 
 public class SquidController implements Controller {
     public double kSq;
@@ -10,12 +10,10 @@ public class SquidController implements Controller {
         this.tolerance = tolerance;
     }
 
-    public double calculate(double pos) { return Math.sqrt(Math.abs((target - pos) * kSq)) * Math.signum(target - pos); }
+    public double calculate(double error) { return Math.sqrt(Math.abs(error * kSq)) * Math.signum(error); }
 
-    @Override
-    public double calculate(double pos, double target) {
-        setTarget(target);
-        return calculate(pos);
+    public void setConstants(double... constants) {
+        kSq = constants[0];
     }
 
     @Override

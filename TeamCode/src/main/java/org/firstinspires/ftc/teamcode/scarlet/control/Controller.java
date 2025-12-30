@@ -1,8 +1,8 @@
-package org.firstinspires.ftc.teamcode.scarlet;
+package org.firstinspires.ftc.teamcode.scarlet.control;
 
 public interface Controller {
-    double calculate(double pos);
-    double calculate(double pos, double target);
+    double calculate(double error);
+    void setConstants(double... constants);
 
     boolean atTarget();
     boolean atTarget(double target);

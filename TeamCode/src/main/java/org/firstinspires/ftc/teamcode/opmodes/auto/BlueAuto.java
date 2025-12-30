@@ -23,6 +23,7 @@ public class BlueAuto extends CommandOpMode {
 
         schedule(new SequentialCommandGroup(
 
+            //
             new InstantCommand(() -> {
                 Snoopy.intake.setPower(0.5);
                 Snoopy.intake.setMinPower(0.5);
