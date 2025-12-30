@@ -33,7 +33,7 @@ public class Paths {
     public Pose intakePPG1Pose = new Pose(42,39, shootingPose.getHeading());
     public Pose intakePPG2Pose = new Pose(8.5, 39, shootingPose.getHeading());
     public Pose intakePPG1Control = new Pose(57, 37);
-    public Pose parkPose = new Pose(22, 72, Math.toRadians(90));
+    public Pose parkPose = new Pose(28, 72, shootingPose.getHeading());
 
     public Paths(Follower follower, Snoopy.Alliance alliance) {
         startPose = Snoopy.startPose;
@@ -114,7 +114,7 @@ public class Paths {
         intakePPG1 = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierCurve(shootingPose, intakePPG1Control, intakePPG1Pose)
+                        new BezierCurve(shootingPose, intakePPG1Pose)
                 )
                 .setConstantHeadingInterpolation(shootingPose.getHeading())
                 .build();

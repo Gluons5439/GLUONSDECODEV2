@@ -54,7 +54,7 @@ public class Blue12Ball extends CommandOpMode {
                     Snoopy.intake.setPower(0);
                 }),
                 new FollowPathCommand(Snoopy.drivetrain.follower, paths.intakePGP1),
-                new WaitCommand(200),
+                new WaitCommand(150),
                 new InstantCommand(() -> {
                     Snoopy.intake.setPower(1);
                     Snoopy.drivetrain.follower.setMaxPower(0.8);
@@ -79,11 +79,12 @@ public class Blue12Ball extends CommandOpMode {
                 }),
                 new FollowPathCommand(Snoopy.drivetrain.follower, paths.intakePPG1),
                 new WaitCommand(300),
-                new FollowPathCommand(Snoopy.drivetrain.follower, paths.intakePPG2),
                 new InstantCommand(() -> {
                     Snoopy.intake.setPower(1);
-                    Snoopy.drivetrain.follower.setMaxPower(0.8);
+                    Snoopy.drivetrain.follower.setMaxPower(0.7);
                 }),
+                new FollowPathCommand(Snoopy.drivetrain.follower, paths.intakePPG2),
+
 
                 new WaitCommand(500),
 
