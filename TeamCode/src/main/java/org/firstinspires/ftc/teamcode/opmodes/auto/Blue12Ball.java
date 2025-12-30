@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.opmodes.auto;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
-import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
@@ -42,21 +41,20 @@ public class Blue12Ball extends CommandOpMode {
                 new WaitCommand(500),
 
                 new InstantCommand(() -> {
-                    Snoopy.drivetrain.follower.setMaxPower(0.7);
+                    Snoopy.drivetrain.follower.setMaxPower(1);
                     Snoopy.intake.setPower(0.5);
                     Snoopy.intake.setMinPower(0.5);
                 }),
-                new FollowPathCommand(Snoopy.drivetrain.follower, paths.openGate),
-                new WaitCommand(1000),
                 new FollowPathCommand(Snoopy.drivetrain.follower, paths.scoreGPP),
 
                 Snoopy.shootOptimized(),
 
                 new InstantCommand(() -> {
-                    Snoopy.drivetrain.follower.setMaxPower(1);
+                    Snoopy.drivetrain.follower.setMaxPower(0.9);
                     Snoopy.intake.setPower(0);
                 }),
                 new FollowPathCommand(Snoopy.drivetrain.follower, paths.intakePGP1),
+                new WaitCommand(200),
                 new InstantCommand(() -> {
                     Snoopy.intake.setPower(1);
                     Snoopy.drivetrain.follower.setMaxPower(0.8);
@@ -79,16 +77,14 @@ public class Blue12Ball extends CommandOpMode {
                     Snoopy.drivetrain.follower.setMaxPower(1);
                     Snoopy.intake.setPower(0);
                 }),
-                new ParallelCommandGroup(
-                        new FollowPathCommand(Snoopy.drivetrain.follower, paths.intakePPG),
-                        new SequentialCommandGroup(
-                                new WaitCommand(700),
-                                new InstantCommand(() -> {
-                                    Snoopy.intake.setPower(1);
-                                    Snoopy.drivetrain.follower.setMaxPower(0.8);
-                                })
-                        )
-                ),
+                new FollowPathCommand(Snoopy.drivetrain.follower, paths.intakePPG1),
+                new WaitCommand(300),
+                new FollowPathCommand(Snoopy.drivetrain.follower, paths.intakePPG2),
+                new InstantCommand(() -> {
+                    Snoopy.intake.setPower(1);
+                    Snoopy.drivetrain.follower.setMaxPower(0.8);
+                }),
+
                 new WaitCommand(500),
 
                 new InstantCommand(() -> {
@@ -99,8 +95,6 @@ public class Blue12Ball extends CommandOpMode {
                 new FollowPathCommand(Snoopy.drivetrain.follower, paths.scorePPG),
 
                 Snoopy.shootOptimized(),
-
-
 
                 new InstantCommand(() -> {
                     Snoopy.drivetrain.follower.setMaxPower(1);

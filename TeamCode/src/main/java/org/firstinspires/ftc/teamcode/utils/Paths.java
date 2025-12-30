@@ -16,7 +16,8 @@ public class Paths {
     public PathChain intakePGP1;
     public PathChain intakePGP2;
     public PathChain scorePGP;
-    public PathChain intakePPG;
+    public PathChain intakePPG1;
+    public PathChain intakePPG2;
     public PathChain scorePPG;
     public PathChain park;
 
@@ -29,9 +30,9 @@ public class Paths {
     public Pose intakePGP1Pose = new Pose(45, 60, shootingPose.getHeading());
     public Pose intakePGP2Pose = new Pose(8.5, 60, shootingPose.getHeading());
     public Pose scorePGPControl = new Pose(40, 55);
-    public Pose intakePPGPose = new Pose(48,39, shootingPose.getHeading());
-    public Pose intakePPGControl1 = new Pose(36, 22);
-    public Pose intakePPGControl2 = new Pose(71, 37);
+    public Pose intakePPG1Pose = new Pose(42,39, shootingPose.getHeading());
+    public Pose intakePPG2Pose = new Pose(8.5, 39, shootingPose.getHeading());
+    public Pose intakePPG1Control = new Pose(57, 37);
     public Pose parkPose = new Pose(22, 72, Math.toRadians(90));
 
     public Paths(Follower follower, Snoopy.Alliance alliance) {
@@ -44,9 +45,8 @@ public class Paths {
             openGateControl = openGateControl.mirror();
             intakePGP1Pose = intakePGP1Pose.mirror();
             intakePGP2Pose = intakePGP2Pose.mirror();
-            intakePPGPose = intakePPGPose.mirror();
-            intakePPGControl1 = intakePPGControl1.mirror();
-            intakePPGControl2 = intakePPGControl2.mirror();
+            intakePPG1Pose = intakePPG1Pose.mirror();
+            intakePPG1Control = intakePPG1Control.mirror();
             scorePGPControl = scorePGPControl.mirror();
             parkPose = parkPose.mirror();
         }
@@ -111,20 +111,26 @@ public class Paths {
                 .setConstantHeadingInterpolation(shootingPose.getHeading())
                 .build();
 
-        intakePPG = follower
+        intakePPG1 = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierCurve(shootingPose, intakePPGControl1, intakePPGControl2, intakePPGPose)
+                        new BezierCurve(shootingPose, intakePPG1Control, intakePPG1Pose)
                 )
                 .setConstantHeadingInterpolation(shootingPose.getHeading())
                 .build();
 
-
+        intakePPG2 = follower
+                .pathBuilder()
+                .addPath(
+                        new BezierLine(intakePPG1Pose, intakePPG2Pose)
+                )
+                .setConstantHeadingInterpolation(shootingPose.getHeading())
+                .build();
 
         scorePPG = follower
                 .pathBuilder()
                 .addPath(
-                        new BezierCurve(intakePPGPose, scorePGPControl,shootingPose)
+                        new BezierCurve(intakePPG2Pose, scorePGPControl, shootingPose)
                 )
                 .setConstantHeadingInterpolation(shootingPose.getHeading())
                 .build();
