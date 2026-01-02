@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.utils.Paths;
 import org.firstinspires.ftc.teamcode.utils.Snoopy;
 
 @Autonomous(preselectTeleOp="TeleOp")
-public class RedAuto extends CommandOpMode {
+public class Red9Ball extends CommandOpMode {
 
     Paths paths;
 

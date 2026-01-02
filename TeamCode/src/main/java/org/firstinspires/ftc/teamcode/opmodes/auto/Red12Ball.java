@@ -11,14 +11,14 @@ import org.firstinspires.ftc.teamcode.utils.Paths;
 import org.firstinspires.ftc.teamcode.utils.Snoopy;
 
 @Autonomous(preselectTeleOp="TeleOp")
-public class Blue12Ball extends CommandOpMode {
+public class Red12Ball extends CommandOpMode {
 
     Paths paths;
 
     @Override
     public void initialize() {
-        Snoopy.init(hardwareMap, Snoopy.MatchState.AUTO, Snoopy.Alliance.BLUE);
-        paths = new Paths(Snoopy.drivetrain.follower, Snoopy.Alliance.BLUE);
+        Snoopy.init(hardwareMap, Snoopy.MatchState.AUTO, Snoopy.Alliance.RED);
+        paths = new Paths(Snoopy.drivetrain.follower, Snoopy.Alliance.RED);
         Snoopy.drivetrain.follower.setMaxPower(0.8);
 
         schedule(new SequentialCommandGroup(
