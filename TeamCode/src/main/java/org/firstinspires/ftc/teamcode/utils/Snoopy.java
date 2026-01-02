@@ -46,6 +46,9 @@ public class Snoopy {
     public static int delay1 = 200;
     public static int delay2 = 350;
 
+    public static int failsafeDelay = 2000;
+    public static int flywheelThreshhold = 100;
+
     public static void init(HardwareMap hardwareMap, MatchState matchState, Alliance alliance) {
         Snoopy.matchState = matchState;
         Snoopy.alliance = alliance;
@@ -104,14 +107,14 @@ public class Snoopy {
                     shooter.openStopper();
                     shooter.raiseHood();
                 }),
-                new WaitUntilCommand(() -> Math.abs(Snoopy.shooter.controller.getPositionError()) > 80).raceWith(new WaitCommand(1200).whenFinished(() -> usedTimeout.set(true))),
+                new WaitUntilCommand(() -> Math.abs(Snoopy.shooter.controller.getPositionError()) > flywheelThreshhold).raceWith(new WaitCommand(failsafeDelay).whenFinished(() -> usedTimeout.set(true))),
                 new ConditionalCommand(
                         new SequentialCommandGroup(
                                 new InstantCommand(() -> {
-                                    intake.setMinPower(-1);
-                                    intake.setPower(-1);
+                                    intake.setMinPower(-.5);
+                                    intake.setPower(-.5);
                                 }),
-                                new WaitCommand(250),
+                                new WaitCommand(125),
                                 new InstantCommand(() -> {
                                     intake.setPower(1);
                                     intake.setMinPower(1);
