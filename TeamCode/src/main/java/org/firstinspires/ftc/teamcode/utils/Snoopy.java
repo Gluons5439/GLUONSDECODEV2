@@ -48,6 +48,9 @@ public class Snoopy {
 
     public static int failsafeDelay = 2000;
     public static int flywheelThreshhold = 100;
+    public static double primeIntakeSpeed1 = 0.8;
+    public static double primeIntakeSpeed2 = 0.5;
+    public static double primeIntakeSpeed3 = 0;
 
     public static void init(HardwareMap hardwareMap, MatchState matchState, Alliance alliance) {
         Snoopy.matchState = matchState;
@@ -86,19 +89,90 @@ public class Snoopy {
         });
     }
 
-    public static InstantCommand prime() {
+//    public static InstantCommand primeOld() {
+//        return new InstantCommand(() -> {
+//            turret.enableAim = true;
+//            intake.setMinPower(0);
+//            intake.setPower(0);
+//            shooter.setVelocity(Shooter.VELO_NEAR);
+//            shooter.closeStopper();
+//            shooter.raiseHood();
+//        });
+//    }
+//
+//    public static Command shootOld(){
+//        AtomicBoolean usedTimeout = new AtomicBoolean(false);
+//        return new SequentialCommandGroup(
+//                new WaitUntilCommand(() -> Snoopy.shooter.controller.atSetPoint()),
+//                new InstantCommand(() -> {
+//                    turret.enableAim = true;
+//                    intake.setMinPower(1);
+//                    shooter.setVelocity(Shooter.VELO_NEAR);
+//                    shooter.openStopper();
+//                    shooter.raiseHood();
+//                }),
+//                new WaitUntilCommand(() -> Math.abs(Snoopy.shooter.controller.getPositionError()) > flywheelThreshhold).raceWith(new WaitCommand(failsafeDelay).whenFinished(() -> usedTimeout.set(true))),
+//                new ConditionalCommand(
+//                        new SequentialCommandGroup(
+//                                new InstantCommand(() -> {
+//                                    intake.setMinPower(-.5);
+//                                    intake.setPower(-.5);
+//                                }),
+//                                new WaitCommand(125),
+//                                new InstantCommand(() -> {
+//                                    intake.setPower(1);
+//                                    intake.setMinPower(1);
+//                                }),
+//                                new WaitCommand(750)
+//                        ),
+//                        new InstantCommand(),
+//                    usedTimeout::get
+//                )
+//        );
+//    }
+//    public static SequentialCommandGroup shootOptimizedOld() {
+//        return new SequentialCommandGroup(
+//                prime(),
+//                shoot(),
+//                prime(),
+//                shoot(),
+//                prime(),
+//                shoot(),
+//                new WaitUntilCommand(() -> Snoopy.shooter.controller.atSetPoint()),
+//                reset()
+//        );
+//    };
+    public static InstantCommand prime(double primeIntakeSpeed) {
         return new InstantCommand(() -> {
             turret.enableAim = true;
-            intake.setMinPower(0);
-            intake.setPower(0);
+            intake.setMinPower(primeIntakeSpeed);
+            intake.setPower(primeIntakeSpeed);
             shooter.setVelocity(Shooter.VELO_NEAR);
             shooter.closeStopper();
             shooter.raiseHood();
         });
     }
-    public static Command shoot(){
-        AtomicBoolean usedTimeout = new AtomicBoolean(false);
+
+    public static AtomicBoolean failed = new AtomicBoolean(false);
+
+    public static Command failsafe(){
         return new SequentialCommandGroup(
+                new InstantCommand(() -> {
+                    intake.setMinPower(-.5);
+                    intake.setPower(-.5);
+                }),
+                new WaitCommand(125),
+                new InstantCommand(() -> {
+                    intake.setPower(1);
+                    intake.setMinPower(1);
+                }),
+                new WaitCommand(750)
+        );
+    }
+
+    public static Command shoot(double primeIntakeSpeed){
+        return new SequentialCommandGroup(
+                prime(primeIntakeSpeed),
                 new WaitUntilCommand(() -> Snoopy.shooter.controller.atSetPoint()),
                 new InstantCommand(() -> {
                     turret.enableAim = true;
@@ -107,35 +181,21 @@ public class Snoopy {
                     shooter.openStopper();
                     shooter.raiseHood();
                 }),
-                new WaitUntilCommand(() -> Math.abs(Snoopy.shooter.controller.getPositionError()) > flywheelThreshhold).raceWith(new WaitCommand(failsafeDelay).whenFinished(() -> usedTimeout.set(true))),
+                new WaitUntilCommand(() -> Math.abs(Snoopy.shooter.controller.getPositionError()) > flywheelThreshhold).raceWith(new WaitCommand(failsafeDelay).whenFinished(() -> failed.set(true))),
                 new ConditionalCommand(
-                        new SequentialCommandGroup(
-                                new InstantCommand(() -> {
-                                    intake.setMinPower(-.5);
-                                    intake.setPower(-.5);
-                                }),
-                                new WaitCommand(125),
-                                new InstantCommand(() -> {
-                                    intake.setPower(1);
-                                    intake.setMinPower(1);
-                                }),
-                                new WaitCommand(750)
-                        ),
+                        failsafe(),
                         new InstantCommand(),
-                    usedTimeout::get
+                        failed::get
                 )
+
         );
     }
-
     public static SequentialCommandGroup shootOptimized() {
+        failed.set(false);
         return new SequentialCommandGroup(
-                prime(),
-                shoot(),
-                prime(),
-                shoot(),
-                prime(),
-                shoot(),
-                new WaitUntilCommand(() -> Snoopy.shooter.controller.atSetPoint()),
+                shoot(primeIntakeSpeed1),
+                new ConditionalCommand(reset(), shoot(primeIntakeSpeed2), failed::get),
+                new ConditionalCommand(reset(), shoot(primeIntakeSpeed3), failed::get),
                 reset()
         );
     };

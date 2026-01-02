@@ -21,7 +21,7 @@ public class TeleOp extends CommandOpMode {
     public void initialize() {
         Snoopy.init(hardwareMap, Snoopy.MatchState.TELEOP, Storage.alliance);
 
-        Command prime = Snoopy.prime();
+        Command prime = Snoopy.prime(0);
         Command shoot = Snoopy.shootOptimized();
 
         GamepadEx arvind = new GamepadEx(gamepad1);
