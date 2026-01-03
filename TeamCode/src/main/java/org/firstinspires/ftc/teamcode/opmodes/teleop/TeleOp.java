@@ -12,6 +12,7 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import org.firstinspires.ftc.teamcode.utils.Snoopy;
 import org.firstinspires.ftc.teamcode.utils.Storage;
 import org.firstinspires.ftc.teamcode.utils.subsystems.Shooter;
+import org.firstinspires.ftc.teamcode.utils.subsystems.Turret;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
 @Configurable
@@ -21,7 +22,7 @@ public class TeleOp extends CommandOpMode {
     public void initialize() {
         Snoopy.init(hardwareMap, Snoopy.MatchState.TELEOP, Storage.alliance);
 
-        Command prime = Snoopy.prime(0);
+        Command prime = Snoopy.prime();
         Command shoot = Snoopy.shootOptimized();
 
         GamepadEx arvind = new GamepadEx(gamepad1);
@@ -92,6 +93,7 @@ public class TeleOp extends CommandOpMode {
         telemetry.addData("error", Snoopy.shooter.controller.getPositionError());
         telemetry.addData("atSetPoint", Snoopy.shooter.controller.atSetPoint());
         telemetry.addData("velo", Snoopy.shooter.getVelocity());
+        telemetry.addData("storage angle", Storage.turretAngle);
         telemetry.update();
     }
 

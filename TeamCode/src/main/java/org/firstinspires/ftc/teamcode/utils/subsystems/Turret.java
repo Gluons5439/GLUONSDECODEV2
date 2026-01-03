@@ -27,11 +27,11 @@ public class Turret extends SubsystemBase {
         motor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         motor.setInverted(true);
         controller.setTolerance(tolerance);
-        setAngle(0);
     }
 
     public double getAngle(){
-        return motor.getCurrentPosition() / ticksPerRadian;
+        double currentPos = motor.getCurrentPosition();
+        return (currentPos) / ticksPerRadian;
     }
 
     public void setAngle(double angle){

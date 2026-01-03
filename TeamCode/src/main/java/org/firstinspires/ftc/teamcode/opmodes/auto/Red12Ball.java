@@ -9,6 +9,7 @@ import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
 import org.firstinspires.ftc.teamcode.utils.Paths;
 import org.firstinspires.ftc.teamcode.utils.Snoopy;
+import org.firstinspires.ftc.teamcode.utils.Storage;
 
 @Autonomous(preselectTeleOp="TeleOp")
 public class Red12Ball extends CommandOpMode {
@@ -110,6 +111,7 @@ public class Red12Ball extends CommandOpMode {
         telemetry.addData("turret angle", Math.toDegrees(Snoopy.turret.getAngle()));
         telemetry.addData("setpoint", Snoopy.turret.controller.getSetPoint());
         telemetry.addData("goal", Snoopy.goal);
+        telemetry.addData("storage angle", Storage.turretAngle);
         telemetry.update();
     }
 }
