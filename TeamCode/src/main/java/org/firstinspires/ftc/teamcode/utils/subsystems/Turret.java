@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.utils.subsystems;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
@@ -20,13 +21,14 @@ public class Turret extends SubsystemBase {
     public double tolerance = 1;
 
     public boolean enableAim = false;
-
+    public double homePos = 0;
     public Turret(HardwareMap hMap) {
         motor = new Motor(hMap, "turret", Motor.GoBILDA.BARE);
         motor.stopAndResetEncoder();
         motor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         motor.setInverted(true);
         controller.setTolerance(tolerance);
+        homePos = 0;
     }
 
     public double getAngle(){
@@ -50,8 +52,8 @@ public class Turret extends SubsystemBase {
 
             double robotAngle = Snoopy.drivetrain.follower.getHeading();
             setAngle(targetAngle - robotAngle);
-        }else{
-            setAngle(0);
+        }else {
+            setAngle(homePos);
         }
 
         controller.setP(p);

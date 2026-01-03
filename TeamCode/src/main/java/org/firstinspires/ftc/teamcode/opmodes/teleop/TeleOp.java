@@ -18,6 +18,8 @@ import org.firstinspires.ftc.teamcode.utils.subsystems.Turret;
 @Configurable
 public class TeleOp extends CommandOpMode {
 
+    public static double increment = 0.0875;
+
     @Override
     public void initialize() {
         Snoopy.init(hardwareMap, Snoopy.MatchState.TELEOP, Storage.alliance);
@@ -82,6 +84,19 @@ public class TeleOp extends CommandOpMode {
                 .whenPressed(
                         new InstantCommand(() -> Snoopy.shooter.openStopper())
                 );
+
+        toolOp.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(new InstantCommand(() -> {
+            double pos = Snoopy.turret.controller.getSetPoint();
+            Snoopy.turret.homePos = pos - increment;
+        }));
+
+        toolOp.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(new InstantCommand(() -> {
+            double pos = Snoopy.turret.controller.getSetPoint();
+            Snoopy.turret.homePos = pos + increment;
+        }));
+        toolOp.getGamepadButton(GamepadKeys.Button.SHARE).whenPressed(new InstantCommand(() -> {
+            Snoopy.init(hardwareMap, Snoopy.MatchState.TELEOP, Storage.alliance);
+        }));
     }
 
     public void run() {

@@ -43,8 +43,8 @@ public class Snoopy {
     public static Pose startPose;
     public static Vector2d goal;
 
-    public static int failsafeDelay = 2000;
-    public static int flywheelThreshhold = 100;
+    public static int failsafeDelay = 100;
+    public static int flywheelThreshhold = 80;
     public static double primeIntakeSpeed1 = 0.8;
     public static double primeIntakeSpeed2 = 0.5;
     public static double primeIntakeSpeed3 = 0;
