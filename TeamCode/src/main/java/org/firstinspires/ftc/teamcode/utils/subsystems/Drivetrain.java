@@ -28,7 +28,7 @@ public class Drivetrain extends SubsystemBase {
         follower.setTeleOpDrive(
                 -gamepad1.right_stick_y * multiplier,
                 -gamepad1.right_stick_x * multiplier,
-                -gamepad1.left_stick_x * .5 * multiplier,
+                -gamepad1.left_stick_x * multiplier,
                 true
         );
     }
