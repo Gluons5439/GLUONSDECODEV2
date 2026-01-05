@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.utils.subsystems.Turret;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Configurable
-public class TedMosby {
+public class Mosby {
     public enum MatchState {
         AUTO,
         TELEOP
@@ -50,10 +50,10 @@ public class TedMosby {
     public static double primeIntakeSpeed3 = 0;
 
     public static void init(HardwareMap hardwareMap, MatchState matchState, Alliance alliance) {
-        TedMosby.matchState = matchState;
-        TedMosby.alliance = alliance;
-        TedMosby.startPose = alliance == Alliance.RED? RED_START_POSE : BLUE_START_POSE;
-        TedMosby.goal = alliance == Alliance.RED? RED_GOAL : BLUE_GOAL;
+        Mosby.matchState = matchState;
+        Mosby.alliance = alliance;
+        Mosby.startPose = alliance == Alliance.RED? RED_START_POSE : BLUE_START_POSE;
+        Mosby.goal = alliance == Alliance.RED? RED_GOAL : BLUE_GOAL;
 
         drivetrain = new Drivetrain(hardwareMap);
         turret = new Turret(hardwareMap);
@@ -62,7 +62,7 @@ public class TedMosby {
 
         Storage.alliance = alliance;
 
-        TedMosby.drivetrain.follower.setStartingPose(matchState == MatchState.AUTO ? startPose : Storage.pose);
+        Mosby.drivetrain.follower.setStartingPose(matchState == MatchState.AUTO ? startPose : Storage.pose);
 
         CommandScheduler.getInstance().registerSubsystem(drivetrain, turret, intake, shooter);
 
@@ -100,7 +100,7 @@ public class TedMosby {
     public static Command shoot(){
         AtomicBoolean usedTimeout = new AtomicBoolean(false);
         return new SequentialCommandGroup(
-                new WaitUntilCommand(() -> TedMosby.shooter.controller.atSetPoint()),
+                new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
                 new InstantCommand(() -> {
                     turret.enableAim = true;
                     intake.setMinPower(1);
@@ -108,7 +108,7 @@ public class TedMosby {
                     shooter.openStopper();
                     shooter.raiseHood();
                 }),
-                new WaitUntilCommand(() -> Math.abs(TedMosby.shooter.controller.getPositionError()) > flywheelThreshhold).raceWith(new WaitCommand(failsafeDelay).whenFinished(() -> usedTimeout.set(true))),
+                new WaitUntilCommand(() -> Math.abs(Mosby.shooter.controller.getPositionError()) > flywheelThreshhold).raceWith(new WaitCommand(failsafeDelay).whenFinished(() -> usedTimeout.set(true))),
                 new ConditionalCommand(
                         new SequentialCommandGroup(
                                 new InstantCommand(() -> {
@@ -135,7 +135,7 @@ public class TedMosby {
                 shoot(),
                 prime(),
                 shoot(),
-                new WaitUntilCommand(() -> TedMosby.shooter.controller.atSetPoint()),
+                new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
                 reset()
         );
     };

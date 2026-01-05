@@ -7,7 +7,7 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 
-import org.firstinspires.ftc.teamcode.utils.TedMosby;
+import org.firstinspires.ftc.teamcode.utils.Mosby;
 import org.firstinspires.ftc.teamcode.utils.Storage;
 
 @Configurable
@@ -42,14 +42,14 @@ public class Turret extends SubsystemBase {
     public void update() {
 
         if(enableAim){
-            Pose pos = TedMosby.drivetrain.follower.getPose();
+            Pose pos = Mosby.drivetrain.follower.getPose();
 
-            double deltaX = TedMosby.goal.getX() - pos.getX();
-            double deltaY = TedMosby.goal.getY() - pos.getY();
+            double deltaX = Mosby.goal.getX() - pos.getX();
+            double deltaY = Mosby.goal.getY() - pos.getY();
 
             double targetAngle = Math.atan2(deltaY, deltaX);
 
-            double robotAngle = TedMosby.drivetrain.follower.getHeading();
+            double robotAngle = Mosby.drivetrain.follower.getHeading();
             setAngle(targetAngle - robotAngle);
         }else {
             setAngle(homePos);
