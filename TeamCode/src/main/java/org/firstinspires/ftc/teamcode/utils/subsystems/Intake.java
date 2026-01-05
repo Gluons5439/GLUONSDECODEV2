@@ -80,7 +80,7 @@ public class Intake extends SubsystemBase {
     }
 
 
-    @Override
+
     public void periodic() {
         double pow = Math.max(Math.abs(power), Math.abs(minPower));
 
