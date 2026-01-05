@@ -59,15 +59,9 @@ public class Intake extends SubsystemBase {
         intake.set(minPower);
     }
 
-
-    public void setControl(boolean intakeIn, boolean intakeOut) {
-        if (intakeIn) {
-            power = INTAKE_POWER;
-        } else if (intakeOut) {
-            power = OUTTAKE_POWER;
-        } else {
-            power = 0.0;
-        }
+    public void setPower(double power)
+    {
+        this.power = power;
     }
 
 
