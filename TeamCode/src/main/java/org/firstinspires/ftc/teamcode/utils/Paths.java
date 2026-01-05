@@ -34,9 +34,9 @@ public class Paths {
     public Pose intakePPG1Control = new Pose(57, 36);
     public Pose parkPose = new Pose(28, 72, shootingPose.getHeading());
 
-    public Paths(Follower follower, Snoopy.Alliance alliance) {
-        startPose = Snoopy.startPose;
-        if (alliance == Snoopy.Alliance.RED) {
+    public Paths(Follower follower, TedMosby.Alliance alliance) {
+        startPose = TedMosby.startPose;
+        if (alliance == TedMosby.Alliance.RED) {
             shootingPose = shootingPose.mirror();
             intakeGPP1Pose = intakeGPP1Pose.mirror();
             intakeGPP2Pose = intakeGPP2Pose.mirror();

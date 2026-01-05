@@ -2,13 +2,12 @@ package org.firstinspires.ftc.teamcode.utils.subsystems;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.geometry.Pose;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 
-import org.firstinspires.ftc.teamcode.utils.Snoopy;
+import org.firstinspires.ftc.teamcode.utils.TedMosby;
 import org.firstinspires.ftc.teamcode.utils.Storage;
 
 @Configurable
@@ -43,14 +42,14 @@ public class Turret extends SubsystemBase {
     public void update() {
 
         if(enableAim){
-            Pose pos = Snoopy.drivetrain.follower.getPose();
+            Pose pos = TedMosby.drivetrain.follower.getPose();
 
-            double deltaX = Snoopy.goal.getX() - pos.getX();
-            double deltaY = Snoopy.goal.getY() - pos.getY();
+            double deltaX = TedMosby.goal.getX() - pos.getX();
+            double deltaY = TedMosby.goal.getY() - pos.getY();
 
             double targetAngle = Math.atan2(deltaY, deltaX);
 
-            double robotAngle = Snoopy.drivetrain.follower.getHeading();
+            double robotAngle = TedMosby.drivetrain.follower.getHeading();
             setAngle(targetAngle - robotAngle);
         }else {
             setAngle(homePos);

@@ -9,10 +9,8 @@ import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
-import org.firstinspires.ftc.teamcode.utils.Snoopy;
+import org.firstinspires.ftc.teamcode.utils.TedMosby;
 import org.firstinspires.ftc.teamcode.utils.Storage;
-import org.firstinspires.ftc.teamcode.utils.subsystems.Shooter;
-import org.firstinspires.ftc.teamcode.utils.subsystems.Turret;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
 @Configurable
@@ -22,10 +20,10 @@ public class TeleOp extends CommandOpMode {
 
     @Override
     public void initialize() {
-        Snoopy.init(hardwareMap, Snoopy.MatchState.TELEOP, Storage.alliance);
+        TedMosby.init(hardwareMap, TedMosby.MatchState.TELEOP, Storage.alliance);
 
-        Command prime = Snoopy.prime();
-        Command shoot = Snoopy.shootOptimized();
+        Command prime = TedMosby.prime();
+        Command shoot = TedMosby.shootOptimized();
 
         GamepadEx arvind = new GamepadEx(gamepad1);
         GamepadEx toolOp = new GamepadEx(gamepad2);
@@ -36,7 +34,7 @@ public class TeleOp extends CommandOpMode {
                             prime.cancel();
                             shoot.cancel();
                         }),
-                        Snoopy.reset()
+                        TedMosby.reset()
                 ));
 
         arvind.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
@@ -53,7 +51,7 @@ public class TeleOp extends CommandOpMode {
                             prime.cancel();
                             shoot.cancel();
                         }),
-                        Snoopy.reset()
+                        TedMosby.reset()
                 ));
 
         toolOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
@@ -65,49 +63,49 @@ public class TeleOp extends CommandOpMode {
         toolOp.getGamepadButton(GamepadKeys.Button.SQUARE)
                 .whenPressed(new SequentialCommandGroup(
                         new InstantCommand(() -> {
-                            Snoopy.intake.setMinPower(-1);
-                            Snoopy.intake.setPower(-1);
+                            TedMosby.intake.setMinPower(-1);
+                            TedMosby.intake.setPower(-1);
                         }),
                         new WaitCommand(150),
                         new InstantCommand(() -> {
-                            Snoopy.intake.setPower(1);
-                            Snoopy.intake.setMinPower(1);
+                            TedMosby.intake.setPower(1);
+                            TedMosby.intake.setMinPower(1);
                         }),
                         new WaitCommand(150),
                         new InstantCommand(() -> {
-                            Snoopy.intake.setPower(0);
-                            Snoopy.intake.setMinPower(0);
+                            TedMosby.intake.setPower(0);
+                            TedMosby.intake.setMinPower(0);
                         })
                 ));
 
         toolOp.getGamepadButton(GamepadKeys.Button.DPAD_UP)
                 .whenPressed(
-                        new InstantCommand(() -> Snoopy.shooter.openStopper())
+                        new InstantCommand(() -> TedMosby.shooter.openStopper())
                 );
 
         toolOp.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(new InstantCommand(() -> {
-            double pos = Snoopy.turret.controller.getSetPoint();
-            Snoopy.turret.homePos = pos - increment;
+            double pos = TedMosby.turret.controller.getSetPoint();
+            TedMosby.turret.homePos = pos - increment;
         }));
 
         toolOp.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(new InstantCommand(() -> {
-            double pos = Snoopy.turret.controller.getSetPoint();
-            Snoopy.turret.homePos = pos + increment;
+            double pos = TedMosby.turret.controller.getSetPoint();
+            TedMosby.turret.homePos = pos + increment;
         }));
         toolOp.getGamepadButton(GamepadKeys.Button.SHARE).whenPressed(new InstantCommand(() -> {
-            Snoopy.init(hardwareMap, Snoopy.MatchState.TELEOP, Storage.alliance);
+            TedMosby.init(hardwareMap, TedMosby.MatchState.TELEOP, Storage.alliance);
         }));
     }
 
     public void run() {
         super.run();
-        Snoopy.update();
-        Snoopy.drivetrain.drive(gamepad1);
-        Snoopy.intake.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
+        TedMosby.update();
+        TedMosby.drivetrain.drive(gamepad1);
+        TedMosby.intake.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
 
-        telemetry.addData("error", Snoopy.shooter.controller.getPositionError());
-        telemetry.addData("atSetPoint", Snoopy.shooter.controller.atSetPoint());
-        telemetry.addData("velo", Snoopy.shooter.getVelocity());
+        telemetry.addData("error", TedMosby.shooter.controller.getPositionError());
+        telemetry.addData("atSetPoint", TedMosby.shooter.controller.atSetPoint());
+        telemetry.addData("velo", TedMosby.shooter.getVelocity());
         telemetry.addData("storage angle", Storage.turretAngle);
         telemetry.update();
     }

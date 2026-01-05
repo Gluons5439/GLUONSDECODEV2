@@ -8,7 +8,7 @@ import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
 import org.firstinspires.ftc.teamcode.utils.Paths;
-import org.firstinspires.ftc.teamcode.utils.Snoopy;
+import org.firstinspires.ftc.teamcode.utils.TedMosby;
 
 @Autonomous(preselectTeleOp="TeleOp")
 public class Red9Ball extends CommandOpMode {
@@ -17,58 +17,58 @@ public class Red9Ball extends CommandOpMode {
 
     @Override
     public void initialize() {
-        Snoopy.init(hardwareMap, Snoopy.MatchState.AUTO, Snoopy.Alliance.RED);
-        paths = new Paths(Snoopy.drivetrain.follower, Snoopy.Alliance.RED);
-        Snoopy.drivetrain.follower.setMaxPower(0.7);
+        TedMosby.init(hardwareMap, TedMosby.MatchState.AUTO, TedMosby.Alliance.RED);
+        paths = new Paths(TedMosby.drivetrain.follower, TedMosby.Alliance.RED);
+        TedMosby.drivetrain.follower.setMaxPower(0.7);
 
         schedule(new SequentialCommandGroup(
 
                 new InstantCommand(() -> {
-                    Snoopy.intake.setPower(0.5);
-                    Snoopy.intake.setMinPower(0.5);
+                    TedMosby.intake.setPower(0.5);
+                    TedMosby.intake.setMinPower(0.5);
                 }),
-                new FollowPathCommand(Snoopy.drivetrain.follower, paths.startToScore),
+                new FollowPathCommand(TedMosby.drivetrain.follower, paths.startToScore),
 
-                Snoopy.shootOptimized(),
+                TedMosby.shootOptimized(),
 
-                new InstantCommand(() -> Snoopy.drivetrain.follower.setMaxPower(0.5)),
-                new FollowPathCommand(Snoopy.drivetrain.follower, paths.intakeGPP1),
-                new InstantCommand(() -> Snoopy.intake.setPower(1)),
-                new FollowPathCommand(Snoopy.drivetrain.follower, paths.intakeGPP2),
+                new InstantCommand(() -> TedMosby.drivetrain.follower.setMaxPower(0.5)),
+                new FollowPathCommand(TedMosby.drivetrain.follower, paths.intakeGPP1),
+                new InstantCommand(() -> TedMosby.intake.setPower(1)),
+                new FollowPathCommand(TedMosby.drivetrain.follower, paths.intakeGPP2),
                 new WaitCommand(500),
 
                 new InstantCommand(() -> {
-                    Snoopy.drivetrain.follower.setMaxPower(0.6);
-                    Snoopy.intake.setPower(0.5);
-                    Snoopy.intake.setMinPower(0.5);
+                    TedMosby.drivetrain.follower.setMaxPower(0.6);
+                    TedMosby.intake.setPower(0.5);
+                    TedMosby.intake.setMinPower(0.5);
                 }),
-                new FollowPathCommand(Snoopy.drivetrain.follower, paths.scoreGPP),
+                new FollowPathCommand(TedMosby.drivetrain.follower, paths.scoreGPP),
 
-                Snoopy.shootOptimized(),
+                TedMosby.shootOptimized(),
 
-                new InstantCommand(() -> Snoopy.drivetrain.follower.setMaxPower(0.5)),
-                new FollowPathCommand(Snoopy.drivetrain.follower, paths.intakePGP1),
-                new InstantCommand(() -> Snoopy.intake.setPower(1)),
-                new FollowPathCommand(Snoopy.drivetrain.follower, paths.intakePGP2),
+                new InstantCommand(() -> TedMosby.drivetrain.follower.setMaxPower(0.5)),
+                new FollowPathCommand(TedMosby.drivetrain.follower, paths.intakePGP1),
+                new InstantCommand(() -> TedMosby.intake.setPower(1)),
+                new FollowPathCommand(TedMosby.drivetrain.follower, paths.intakePGP2),
                 new WaitCommand(500),
 
 
                 new InstantCommand(() -> {
-                    Snoopy.drivetrain.follower.setMaxPower(0.6);
-                    Snoopy.intake.setPower(0.5);
-                    Snoopy.intake.setMinPower(0.5);
+                    TedMosby.drivetrain.follower.setMaxPower(0.6);
+                    TedMosby.intake.setPower(0.5);
+                    TedMosby.intake.setMinPower(0.5);
                 }),
-                new FollowPathCommand(Snoopy.drivetrain.follower, paths.scorePGP),
+                new FollowPathCommand(TedMosby.drivetrain.follower, paths.scorePGP),
 
-                Snoopy.shootOptimized(),
+                TedMosby.shootOptimized(),
 
 
                 new InstantCommand(() -> {
-                    Snoopy.drivetrain.follower.setMaxPower(0.6);
-                    Snoopy.intake.setPower(0);
-                    Snoopy.intake.setMinPower(0);
+                    TedMosby.drivetrain.follower.setMaxPower(0.6);
+                    TedMosby.intake.setPower(0);
+                    TedMosby.intake.setMinPower(0);
                 }),
-                new FollowPathCommand(Snoopy.drivetrain.follower, paths.park)
+                new FollowPathCommand(TedMosby.drivetrain.follower, paths.park)
         ));
     }
 
@@ -76,10 +76,10 @@ public class Red9Ball extends CommandOpMode {
     @Override
     public void run() {
         super.run();
-        Snoopy.update();
-        telemetry.addData("turret angle", Math.toDegrees(Snoopy.turret.getAngle()));
-        telemetry.addData("setpoint", Snoopy.turret.controller.getSetPoint());
-        telemetry.addData("goal", Snoopy.goal);
+        TedMosby.update();
+        telemetry.addData("turret angle", Math.toDegrees(TedMosby.turret.getAngle()));
+        telemetry.addData("setpoint", TedMosby.turret.controller.getSetPoint());
+        telemetry.addData("goal", TedMosby.goal);
         telemetry.update();
     }
 }
