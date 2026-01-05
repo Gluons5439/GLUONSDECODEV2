@@ -82,7 +82,7 @@ public class Mosby {
             intake.setMinPower(0);
             shooter.setVelocity(Shooter.idleVeloMultiplier * Shooter.VELO_NEAR);
             shooter.closeStopper();
-            shooter.resetHood();
+            //shooter.resetHood();
         });
     }
 
@@ -93,7 +93,7 @@ public class Mosby {
             intake.setPower(0);
             shooter.setVelocity(Shooter.VELO_NEAR);
             shooter.closeStopper();
-            shooter.raiseHood();
+            //shooter.raiseHood();
         });
     }
 
@@ -106,7 +106,7 @@ public class Mosby {
                     intake.setMinPower(1);
                     shooter.setVelocity(Shooter.VELO_NEAR);
                     shooter.openStopper();
-                    shooter.raiseHood();
+                    //shooter.raiseHood();
                 }),
                 new WaitUntilCommand(() -> Math.abs(Mosby.shooter.controller.getPositionError()) > flywheelThreshhold).raceWith(new WaitCommand(failsafeDelay).whenFinished(() -> usedTimeout.set(true))),
                 new ConditionalCommand(

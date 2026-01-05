@@ -11,21 +11,21 @@ import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 public class Shooter extends SubsystemBase {
     public Motor shooter1;
     public Motor shooter2;
-    public ServoEx hood;
+   // public ServoEx hood;
     public ServoEx stopper;
 
-    public static double P = 0.006;
+    public static double P = 0.000;//0.006
     public static double D = 0.0;
-    public static double F = 0.0008;
+    public static double F = 0.0000;//0.0008
     public PIDFController controller = new PIDFController(P, 0, D, F);
-    public static double TOLERANCE = 60;
+    public static double TOLERANCE = 40;
 
-    public static double STOPPER_OPEN = 0.365;
-    public static double STOPPER_CLOSED = 0.473;
-    public static double HOOD_MIN = 0.267;
-    public static double HOOD_MAX = 0.16;
+    public static double STOPPER_OPEN = 0.05;
+    public static double STOPPER_CLOSED = 0.267;
+    //public static double HOOD_MIN = 0.267;
+    //public static double HOOD_MAX = 0.16;
 
-    public static double HOOD_NEAR = 0.425;
+    //public static double HOOD_NEAR = 0.425;
 
     public static final double MAX_VELO = 1600;
     public static double idleVeloMultiplier = 0.0;
@@ -34,13 +34,13 @@ public class Shooter extends SubsystemBase {
     public static double VELO_NEAR = MAX_VELO * multiplier;
 
     public Shooter(HardwareMap hMap) {
-        shooter1 = new Motor(hMap, "shooter1", Motor.GoBILDA.BARE);
-        shooter2 = new Motor(hMap, "shooter2", Motor.GoBILDA.BARE);
+        shooter1 = new Motor(hMap, "shooterMotor", Motor.GoBILDA.BARE);
+        shooter2 = new Motor(hMap, "shooterMotor2", Motor.GoBILDA.BARE);
         shooter1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         shooter2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
 
-        hood = new ServoEx(hMap, "hood");
-        stopper = new ServoEx(hMap, "stopper");
+     //   hood = new ServoEx(hMap, "hood");
+        stopper = new ServoEx(hMap, "StopperServo");
 
         shooter1.setInverted(true);
         controller.setTolerance(TOLERANCE);
@@ -79,15 +79,14 @@ public class Shooter extends SubsystemBase {
         stopper.set(STOPPER_OPEN);
     }
 
-    public void resetHood(){
-        setHoodPercent(0);
+    //public void resetHood(){
+  //      setHoodPercent(0);
+   // }
+
+    //public void raiseHood(){
+       // setHoodPercent(HOOD_NEAR);
     }
 
-    public void raiseHood(){
-        setHoodPercent(HOOD_NEAR);
-    }
-
-    public void setHoodPercent(double percent) {
-        hood.set(HOOD_MIN + (HOOD_MAX - HOOD_MIN) * percent);
-    }
-}
+   // public void setHoodPercent(double percent) {
+       // hood.set(HOOD_MIN + (HOOD_MAX - HOOD_MIN) * percent);
+    //}
