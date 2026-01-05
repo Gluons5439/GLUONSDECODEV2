@@ -25,10 +25,10 @@ public class TeleOp extends CommandOpMode {
         Command prime = Mosby.prime();
         Command shoot = Mosby.shootOptimized();
 
-        GamepadEx arvind = new GamepadEx(gamepad1);
-        GamepadEx toolOp = new GamepadEx(gamepad2);
+        GamepadEx rishi = new GamepadEx(gamepad1);
+        GamepadEx aaryan = new GamepadEx(gamepad2);
 
-        arvind.getGamepadButton(GamepadKeys.Button.CIRCLE)
+        rishi.getGamepadButton(GamepadKeys.Button.CIRCLE)
                 .whenPressed(new SequentialCommandGroup(
                         new InstantCommand(() -> {
                             prime.cancel();
@@ -37,15 +37,15 @@ public class TeleOp extends CommandOpMode {
                         Mosby.reset()
                 ));
 
-        arvind.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+        rishi.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .whenPressed(prime);
 
-        arvind.getGamepadButton(GamepadKeys.Button.CROSS)
+        rishi.getGamepadButton(GamepadKeys.Button.CROSS)
                 .whenPressed(shoot);
 
 
 
-        toolOp.getGamepadButton(GamepadKeys.Button.CIRCLE)
+        aaryan.getGamepadButton(GamepadKeys.Button.CIRCLE)
                 .whenPressed(new SequentialCommandGroup(
                         new InstantCommand(() -> {
                             prime.cancel();
@@ -54,13 +54,13 @@ public class TeleOp extends CommandOpMode {
                         Mosby.reset()
                 ));
 
-        toolOp.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+        aaryan.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .whenPressed(prime);
 
-        toolOp.getGamepadButton(GamepadKeys.Button.CROSS)
+        aaryan.getGamepadButton(GamepadKeys.Button.CROSS)
                 .whenPressed(shoot);
 
-        toolOp.getGamepadButton(GamepadKeys.Button.SQUARE)
+        aaryan.getGamepadButton(GamepadKeys.Button.SQUARE)
                 .whenPressed(new SequentialCommandGroup(
                         new InstantCommand(() -> {
                             Mosby.intake.setMinPower(-1);
@@ -78,21 +78,21 @@ public class TeleOp extends CommandOpMode {
                         })
                 ));
 
-        toolOp.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+        aaryan.getGamepadButton(GamepadKeys.Button.DPAD_UP)
                 .whenPressed(
                         new InstantCommand(() -> Mosby.shooter.openStopper())
                 );
 
-        toolOp.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(new InstantCommand(() -> {
+        aaryan.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(new InstantCommand(() -> {
             double pos = Mosby.turret.controller.getSetPoint();
             Mosby.turret.homePos = pos - increment;
         }));
 
-        toolOp.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(new InstantCommand(() -> {
+        aaryan.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(new InstantCommand(() -> {
             double pos = Mosby.turret.controller.getSetPoint();
             Mosby.turret.homePos = pos + increment;
         }));
-        toolOp.getGamepadButton(GamepadKeys.Button.SHARE).whenPressed(new InstantCommand(() -> {
+        aaryan.getGamepadButton(GamepadKeys.Button.SHARE).whenPressed(new InstantCommand(() -> {
             Mosby.init(hardwareMap, Mosby.MatchState.TELEOP, Storage.alliance);
         }));
     }
