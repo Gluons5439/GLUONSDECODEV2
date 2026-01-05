@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.utils.subsystems.Shooter;
 @Configurable
 public class VelocityTest extends CommandOpMode {
     Shooter shooter;
+    Shooter hood;
     public static double velo;
     JoinedTelemetry tele;
 
@@ -19,14 +20,13 @@ public class VelocityTest extends CommandOpMode {
     public void initialize() {
         shooter = new Shooter(hardwareMap);
         tele = new JoinedTelemetry(PanelsTelemetry.INSTANCE.getFtcTelemetry(), telemetry);
+        hood = new Shooter(hardwareMap);
+
     }
 
     @Override
     public void run() {
         shooter.setVelocity(velo);
-        shooter.controller.setP(Shooter.P);
-        shooter.controller.setD(Shooter.D);
-        shooter.controller.setF(Shooter.F);
         shooter.update();
 
         tele.addData("velocity", -shooter.shooter1.getCorrectedVelocity());
