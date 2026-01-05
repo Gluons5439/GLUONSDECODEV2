@@ -30,7 +30,7 @@ public class Mosby {
         BLUE
     }
 
-    public static final Pose BLUE_START_POSE = new Pose(24, 126.5, Math.toRadians(90));
+    public static final Pose BLUE_START_POSE = new Pose(64, 8, Math.toRadians(90));
     public static final Pose RED_START_POSE = new Pose(144-BLUE_START_POSE.getX(), BLUE_START_POSE.getY(), Math.toRadians(90));
     public static final Vector2d BLUE_GOAL = new Vector2d(0, 144);
     public static final Vector2d RED_GOAL = new Vector2d(144, 144);

@@ -11,7 +11,7 @@ import com.seattlesolvers.solverslib.hardware.servos.ServoEx;
 public class Shooter extends SubsystemBase {
     public Motor shooter1;
     public Motor shooter2;
-   // public ServoEx hood;
+    public ServoEx hood;
     public ServoEx stopper;
 
     public static double P = 0.000;//0.006
@@ -22,10 +22,10 @@ public class Shooter extends SubsystemBase {
 
     public static double STOPPER_OPEN = 0.05;
     public static double STOPPER_CLOSED = 0.267;
-    //public static double HOOD_MIN = 0.267;
-    //public static double HOOD_MAX = 0.16;
+    public static double HOOD_MIN = 0;
+    public static double HOOD_MAX = 0.16;
 
-    //public static double HOOD_NEAR = 0.425;
+    public static double HOOD_NEAR = 0.425;
 
     public static final double MAX_VELO = 1600;
     public static double idleVeloMultiplier = 0.0;
@@ -39,7 +39,7 @@ public class Shooter extends SubsystemBase {
         shooter1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         shooter2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
 
-     //   hood = new ServoEx(hMap, "hood");
+        hood = new ServoEx(hMap, "hood");
         stopper = new ServoEx(hMap, "StopperServo");
 
         shooter1.setInverted(true);
@@ -58,35 +58,37 @@ public class Shooter extends SubsystemBase {
 
         VELO_NEAR = MAX_VELO * multiplier;
     }
+
     public void setVelocity(double velocity) {
         controller.setSetPoint(velocity);
     }
 
-    public double getVelocity(){
+    public double getVelocity() {
         return -shooter1.getCorrectedVelocity();
     }
 
-    public void setPower(double power){
+    public void setPower(double power) {
         shooter1.set(power);
         shooter2.set(power);
     }
 
-    public void closeStopper(){
+    public void closeStopper() {
         stopper.set(STOPPER_CLOSED);
     }
 
-    public void openStopper(){
+    public void openStopper() {
         stopper.set(STOPPER_OPEN);
     }
 
-    //public void resetHood(){
-  //      setHoodPercent(0);
-   // }
-
-    //public void raiseHood(){
-       // setHoodPercent(HOOD_NEAR);
+    public void resetHood() {
+        setHoodPercent(0);
     }
 
-   // public void setHoodPercent(double percent) {
-       // hood.set(HOOD_MIN + (HOOD_MAX - HOOD_MIN) * percent);
-    //}
+    public void raiseHood() {
+        setHoodPercent(HOOD_NEAR);
+    }
+
+    public void setHoodPercent(double percent) {
+        hood.set( HOOD_MAX * percent);
+    }
+}
