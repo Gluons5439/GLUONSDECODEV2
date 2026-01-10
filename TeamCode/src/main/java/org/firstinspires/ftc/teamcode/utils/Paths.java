@@ -21,18 +21,18 @@ public class Paths {
     public PathChain scorePPG;
     public PathChain park;
     public Pose startPose;
-    public Pose shootingPose = new Pose(32,112, Math.toRadians(180));
-    public Pose intakeGPP1Pose = new Pose(45, 84, shootingPose.getHeading());
-    public Pose intakeGPP2Pose = new Pose(17, 84, shootingPose.getHeading());
+    public Pose shootingPose = new Pose(67,19, Math.toRadians(120));
+    public Pose intakeGPP1Pose = new Pose(42, 35, shootingPose.getHeading());
+    public Pose intakeGPP2Pose = new Pose(21.5, 35, shootingPose.getHeading());
     public Pose openGatePose = new Pose(14, 75, shootingPose.getHeading());
     public Pose openGateControl = new Pose(28,77);
-    public Pose intakePGP1Pose = new Pose(45, 60, shootingPose.getHeading());
-    public Pose intakePGP2Pose = new Pose(8.5, 60, shootingPose.getHeading());
+    public Pose intakePGP1Pose = new Pose(43.5, 60, shootingPose.getHeading());
+    public Pose intakePGP2Pose = new Pose(20, 60, shootingPose.getHeading());
     public Pose scorePGPControl = new Pose(40, 55);
-    public Pose intakePPG1Pose = new Pose(45,36, shootingPose.getHeading());
-    public Pose intakePPG2Pose = new Pose(9.5, 36, shootingPose.getHeading());
+    public Pose intakePPG1Pose = new Pose(42,84, shootingPose.getHeading());
+    public Pose intakePPG2Pose = new Pose(18.5, 84, shootingPose.getHeading());
     public Pose intakePPG1Control = new Pose(57, 36);
-    public Pose parkPose = new Pose(28, 72, shootingPose.getHeading());
+    public Pose parkPose = new Pose(42, 19, shootingPose.getHeading());
 
     public Paths(Follower follower, Mosby.Alliance alliance) {
         startPose = Mosby.startPose;
