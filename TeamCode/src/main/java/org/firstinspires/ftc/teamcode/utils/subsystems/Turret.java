@@ -53,6 +53,7 @@ public class Turret extends SubsystemBase {
             setAngle(targetAngle - robotAngle);
         }else {
             setAngle(homePos);
+
         }
 
         controller.setP(p);
@@ -61,6 +62,7 @@ public class Turret extends SubsystemBase {
         Storage.turretAngle = angle;
         motor.set(controller.calculate(angle));
     }
+
 
     public static double wrapToPi(double radians) {
         double twoPi = 2 * Math.PI;

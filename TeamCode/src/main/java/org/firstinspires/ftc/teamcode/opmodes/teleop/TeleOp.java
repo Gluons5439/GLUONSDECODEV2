@@ -23,17 +23,24 @@ public class TeleOp extends CommandOpMode {
         Mosby.init(hardwareMap, Mosby.MatchState.TELEOP, Storage.alliance);
 
         Command prime = Mosby.prime();
-        Command shoot = Mosby.shootOptimized();
+        Command shoot = Mosby.shoot();
+        Command shootWithIntake = Mosby.shootWithIntake();
+
 
         GamepadEx rishi = new GamepadEx(gamepad1);
         GamepadEx aaryan = new GamepadEx(gamepad2);
 
         // Aaryan controls
         aaryan.getGamepadButton(GamepadKeys.Button.B)
-                .toggleWhenPressed(prime);
+                .toggleWhenPressed(
+                        Mosby::prime,
+                        Mosby::reset
+                );
+
         aaryan.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .whenPressed(shoot);
-
+        aaryan.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
+                .whenPressed(shootWithIntake);
 
 
 /**

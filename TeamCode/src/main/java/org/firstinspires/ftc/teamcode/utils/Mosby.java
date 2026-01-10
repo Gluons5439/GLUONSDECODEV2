@@ -176,8 +176,8 @@ public class Mosby {
                                     shooter.downTransfer();
                                     intake.setPower(0);
                                     intake.setMinPower(0);
-                                    reset();
-                                })
+                                }),
+                                reset()
                         ),
                         new InstantCommand(),
                         usedTimeout::get
