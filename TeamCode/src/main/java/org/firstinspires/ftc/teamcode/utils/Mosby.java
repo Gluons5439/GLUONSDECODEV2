@@ -32,8 +32,8 @@ public class Mosby {
 
     public static final Pose BLUE_START_POSE = new Pose(64, 8, Math.toRadians(90));
     public static final Pose RED_START_POSE = new Pose(144-BLUE_START_POSE.getX(), BLUE_START_POSE.getY(), Math.toRadians(90));
-    public static final Vector2d BLUE_GOAL = new Vector2d(0, 144);
-    public static final Vector2d RED_GOAL = new Vector2d(144, 144);
+    public static final Vector2d BLUE_GOAL = new Vector2d(16.5, 132);
+    public static final Vector2d RED_GOAL = new Vector2d(127.5, 132);
     public static MatchState matchState;
     public static Alliance alliance;
     public static Drivetrain drivetrain;
@@ -80,20 +80,26 @@ public class Mosby {
         return new InstantCommand(() -> {
             turret.enableAim = false;
             intake.setMinPower(0);
-            shooter.setVelocity(Shooter.idleVeloMultiplier * Shooter.VELO_NEAR);
+            shooter.autoPower(false, false);
+            shooter.setVelocity(Shooter.idleVeloMultiplier );
             shooter.closeStopper();
-            //shooter.resetHood();
+            //shooter.resetHood();1
         });
     }
 
     public static InstantCommand prime() {
         return new InstantCommand(() -> {
+
             turret.enableAim = true;
+
             intake.setMinPower(0);
             intake.setPower(0);
-            shooter.setVelocity(Shooter.VELO_NEAR);
-            shooter.closeStopper();
+
+            shooter.openStopper();
             //shooter.raiseHood();
+
+            shooter.autoPower(true, true);
+
         });
     }
 
@@ -103,8 +109,8 @@ public class Mosby {
                 new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
                 new InstantCommand(() -> {
                     turret.enableAim = true;
-                    intake.setMinPower(1);
-                    shooter.setVelocity(Shooter.VELO_NEAR);
+
+                    shooter.autoPower(true , true);
                     shooter.openStopper();
                     //shooter.raiseHood();
                 }),
@@ -112,21 +118,88 @@ public class Mosby {
                 new ConditionalCommand(
                         new SequentialCommandGroup(
                                 new InstantCommand(() -> {
-                                    intake.setMinPower(-.5);
-                                    intake.setPower(-.5);
+                                    shooter.hitTransfer();
+                                }),
+                                new WaitCommand(125),
+                                new InstantCommand(() -> {
+                                    shooter.downTransfer();
                                 }),
                                 new WaitCommand(125),
                                 new InstantCommand(() -> {
                                     intake.setPower(1);
                                     intake.setMinPower(1);
                                 }),
-                                new WaitCommand(750)
+                                new WaitCommand(250),
+                                new InstantCommand(() -> {
+                                    intake.setPower(0);
+                                    intake.setMinPower(0);
+                                })
                         ),
                         new InstantCommand(),
                     usedTimeout::get
                 )
         );
     }
+    public static Command shootWithIntake(){
+        AtomicBoolean usedTimeout = new AtomicBoolean(false);
+        return new SequentialCommandGroup(
+                new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
+                new InstantCommand(() -> {
+                    turret.enableAim = true;
+
+                    shooter.autoPower(true, true);
+                    shooter.openStopper();
+                    //shooter.raiseHood();
+                }),
+                new WaitUntilCommand(() -> Math.abs(Mosby.shooter.controller.getPositionError()) > flywheelThreshhold).raceWith(new WaitCommand(failsafeDelay).whenFinished(() -> usedTimeout.set(true))),
+                new ConditionalCommand(
+                        new SequentialCommandGroup(
+                                new InstantCommand(() -> {
+                                    intake.setPower(1);
+                                    intake.setMinPower(1);
+                                }),
+                                new WaitCommand(100),
+                                new InstantCommand(() -> {
+                                    shooter.autoPower(true, false);
+                                    shooter.setHoodPercent(shooter.hood.getRawPosition()-0.05);
+                                }),
+                                new WaitCommand(100),
+                                new InstantCommand(() -> {
+                                    shooter.setHoodPercent(shooter.hood.getRawPosition()-0.05);
+                                }),
+                                new WaitCommand(50),
+                                new InstantCommand(() -> {
+                                    shooter.hitTransfer();
+                                }),
+                                new WaitCommand(200),
+                                new InstantCommand(() -> {
+                                    shooter.downTransfer();
+                                    intake.setPower(0);
+                                    intake.setMinPower(0);
+                                    reset();
+                                })
+                        ),
+                        new InstantCommand(),
+                        usedTimeout::get
+                )
+        );
+    }
+
+
+
+
+
+
+/**
+    public static Command shoot() {
+        return new InstantCommand(() -> {
+
+
+
+        });
+    }
+ **/
+
     public static SequentialCommandGroup shootOptimized() {
         return new SequentialCommandGroup(
                 prime(),

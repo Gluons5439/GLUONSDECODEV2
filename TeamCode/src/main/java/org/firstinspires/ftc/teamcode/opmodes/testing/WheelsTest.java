@@ -19,10 +19,10 @@ public class WheelsTest extends OpMode {
      */
     @Override
     public void init() {
-        wheel1 = hardwareMap.get(DcMotor.class, "wheel1");
-        wheel2 = hardwareMap.get(DcMotor.class, "wheel2");
-        wheel3 = hardwareMap.get(DcMotor.class, "wheel3");
-        wheel4 = hardwareMap.get(DcMotor.class, "wheel4");
+        wheel1 = hardwareMap.get(DcMotor.class, "frontRightMotor");
+        wheel2 = hardwareMap.get(DcMotor.class, "backRightMotor");
+        wheel3 = hardwareMap.get(DcMotor.class, "backLeftMotor");
+        wheel4 = hardwareMap.get(DcMotor.class, "frontLeftMotor");
     }
 
     /**

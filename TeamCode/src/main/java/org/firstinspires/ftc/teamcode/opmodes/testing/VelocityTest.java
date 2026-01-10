@@ -12,24 +12,32 @@ import org.firstinspires.ftc.teamcode.utils.subsystems.Shooter;
 @Configurable
 public class VelocityTest extends CommandOpMode {
     Shooter shooter;
-    Shooter hood;
-    public static double velo;
+    public static double hood;
+    public static double velo = 0;
+
+    public static double P = 0;
+    public static double F = 0;
+
     JoinedTelemetry tele;
 
     @Override
     public void initialize() {
         shooter = new Shooter(hardwareMap);
         tele = new JoinedTelemetry(PanelsTelemetry.INSTANCE.getFtcTelemetry(), telemetry);
-        hood = new Shooter(hardwareMap);
+
 
     }
 
     @Override
     public void run() {
+        shooter.setHoodPercent(hood);
+        shooter.controller.setP(P);
+        shooter.controller.setF(F);
         shooter.setVelocity(velo);
         shooter.update();
 
         tele.addData("velocity", -shooter.shooter1.getCorrectedVelocity());
+        tele.addData("hoodPercent", shooter.hood.getRawPosition());
         tele.addData("raw velocity", -shooter.shooter1.encoder.getRawVelocity());
         tele.addData("target", velo);
         tele.addData("power", shooter.shooter2.get());

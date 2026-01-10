@@ -22,7 +22,7 @@ public class Turret extends SubsystemBase {
     public boolean enableAim = false;
     public double homePos = 0;
     public Turret(HardwareMap hMap) {
-        motor = new Motor(hMap, "turret", Motor.GoBILDA.RPM_223);
+        motor = new Motor(hMap, "turretMotor", Motor.GoBILDA.RPM_223);
         motor.stopAndResetEncoder();
         motor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         motor.setInverted(true);

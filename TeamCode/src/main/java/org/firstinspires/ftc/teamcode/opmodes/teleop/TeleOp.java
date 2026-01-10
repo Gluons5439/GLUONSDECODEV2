@@ -28,6 +28,15 @@ public class TeleOp extends CommandOpMode {
         GamepadEx rishi = new GamepadEx(gamepad1);
         GamepadEx aaryan = new GamepadEx(gamepad2);
 
+        // Aaryan controls
+        aaryan.getGamepadButton(GamepadKeys.Button.B)
+                .toggleWhenPressed(prime);
+        aaryan.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+                .whenPressed(shoot);
+
+
+
+/**
         rishi.getGamepadButton(GamepadKeys.Button.CIRCLE)
                 .whenPressed(new SequentialCommandGroup(
                         new InstantCommand(() -> {
@@ -82,6 +91,7 @@ public class TeleOp extends CommandOpMode {
                 .whenPressed(
                         new InstantCommand(() -> Mosby.shooter.openStopper())
                 );
+ **/
 
         aaryan.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(new InstantCommand(() -> {
             double pos = Mosby.turret.controller.getSetPoint();
@@ -101,7 +111,16 @@ public class TeleOp extends CommandOpMode {
         super.run();
         Mosby.update();
         Mosby.drivetrain.drive(gamepad1);
-        Mosby.intake.setPower(gamepad1.right_trigger - gamepad1.left_trigger);
+        double gp1Intake = gamepad1.right_trigger - gamepad1.left_trigger;
+        double gp2Intake = gamepad2.right_trigger - gamepad2.left_trigger;
+
+// Take whichever input has greater magnitude
+        double intakePower = Math.abs(gp1Intake) > Math.abs(gp2Intake)
+                ? gp1Intake
+                : gp2Intake;
+
+        Mosby.intake.setPower(intakePower);
+
 
         telemetry.addData("error", Mosby.shooter.controller.getPositionError());
         telemetry.addData("atSetPoint", Mosby.shooter.controller.atSetPoint());
