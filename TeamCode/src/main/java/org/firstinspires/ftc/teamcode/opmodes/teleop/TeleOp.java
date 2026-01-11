@@ -32,10 +32,7 @@ public class TeleOp extends CommandOpMode {
 
         // Aaryan controls
         aaryan.getGamepadButton(GamepadKeys.Button.B)
-                .toggleWhenPressed(
-                        Mosby::prime,
-                        Mosby::reset
-                );
+                .toggleWhenPressed(prime);
 
         aaryan.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .whenPressed(shoot);

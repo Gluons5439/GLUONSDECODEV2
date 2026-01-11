@@ -134,8 +134,9 @@ public class Shooter extends SubsystemBase {
           //  double hoodVal = clamp(lutHood.get(distance), 0, 0.7);
             double velocity = lutVelocity.get(distance);
             double power = controller.calculate(velocity);
-        shooter1.set(-power);
-        shooter2.set(power);
+            controller.setSetPoint(velocity);
+        shooter1.set(power);
+        shooter2.set(-power);
     }
         if(hoodOn)
         {
@@ -144,9 +145,11 @@ public class Shooter extends SubsystemBase {
         }
         else
         {
+            controller.setSetPoint(0);
             shooter1.set(0);
             shooter2.set(0);
             hood.set(0);
+
 
         }
     }
