@@ -24,7 +24,7 @@ public class TeleOp extends CommandOpMode {
         Mosby.update();
 
         Command prime = Mosby.prime();
-        Command shoot = Mosby.shootOptimized();
+        Command shoot = Mosby.shoot();
         Command shootWithIntake = Mosby.shootWithIntake();
 
 
@@ -35,9 +35,16 @@ public class TeleOp extends CommandOpMode {
         aaryan.getGamepadButton(GamepadKeys.Button.B)
                 .toggleWhenPressed(prime);
         aaryan.getGamepadButton(GamepadKeys.Button.A)
-                .toggleWhenPressed(Mosby.reset());
+                .toggleWhenPressed( new SequentialCommandGroup(
+                        new InstantCommand(() -> {
+                            prime.cancel();
+                            shoot.cancel();
+                            shootWithIntake.cancel();
+                        }),
+                        Mosby.reset()
+                ));
 
-        aaryan.getGamepadButton(GamepadKeys.Button.Y)
+        aaryan.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .whenPressed(shoot);
 
         aaryan.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)

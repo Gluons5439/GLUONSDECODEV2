@@ -92,37 +92,31 @@ public class Mosby {
 
     public static InstantCommand prime() {
         return new InstantCommand(() -> {
-
             turret.enableAim = true;
-
-            intake.setMinPower(0);
             intake.setPower(0);
+            intake.setMinPower(0);
 
             shooter.openStopper();
-            //shooter.raiseHood();
-
-            shooter.autoPower(true, true);
-
+            shooter.autoPower(true, true); // ONLY place
         });
     }
 
-    public static Command shoot() {
+
+    public static Command shootPluh() {
         return new SequentialCommandGroup(
 
                 // Wait until flywheel is spun up
-                new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
 
                 // Aim + open stopper + ensure shooter is enabled
                 new InstantCommand(() -> {
                     turret.enableAim = true;
-                    shooter.autoPower(true, true);
                    // shooter.setShooter(true);
                     shooter.openStopper();
                 }),
 
                 // Wait for flywheel speed drop (ball fired)
-                new WaitUntilCommand(() ->
-                        Math.abs(Mosby.shooter.controller.getPositionError()) > flywheelThreshhold
+               new WaitUntilCommand(() ->
+                       Math.abs(Mosby.shooter.controller.getPositionError()) > flywheelThreshhold
                 ),
 
                 // Feed sequence
@@ -142,14 +136,44 @@ public class Mosby {
                 })
         );
     }
+    public static Command shoot(){
+        AtomicBoolean usedTimeout = new AtomicBoolean(false);
+        return new SequentialCommandGroup(
+                new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
+                new InstantCommand(() -> {
+                    turret.enableAim = true;
+                    shooter.openStopper();
+                    //shooter.raiseHood();
+                }),
+                new WaitUntilCommand(() -> Math.abs(Mosby.shooter.controller.getPositionError()) > flywheelThreshhold).raceWith(new WaitCommand(failsafeDelay).whenFinished(() -> usedTimeout.set(true))),
+                new ConditionalCommand(
+                        new SequentialCommandGroup(
+                                new InstantCommand(() -> shooter.hitTransfer()),
+                                new WaitCommand(125),
+                                new InstantCommand(() -> shooter.downTransfer()),
+                                new WaitCommand(125),
+
+                                new InstantCommand(() -> {
+                                    intake.setPower(1);
+                                    intake.setMinPower(1);
+                                }),
+                                new WaitCommand(200),
+                                new InstantCommand(() -> {
+                                    intake.setPower(0);
+                                    intake.setMinPower(0);
+                                })
+                        ),
+                        new InstantCommand(),
+                        usedTimeout::get
+                )
+        );
+    }
     public static Command shootWithIntake(){
         AtomicBoolean usedTimeout = new AtomicBoolean(false);
         return new SequentialCommandGroup(
                 new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
                 new InstantCommand(() -> {
                     turret.enableAim = true;
-
-                    shooter.autoPower(true, true);
                     shooter.openStopper();
                     //shooter.raiseHood();
                 }),
@@ -162,7 +186,6 @@ public class Mosby {
                                 }),
                                 new WaitCommand(100),
                                 new InstantCommand(() -> {
-                                    shooter.autoPower(true, false);
                                     shooter.setHoodPercent(shooter.hood.getRawPosition()-0.2);
                                 }),
                                 new WaitCommand(120),
