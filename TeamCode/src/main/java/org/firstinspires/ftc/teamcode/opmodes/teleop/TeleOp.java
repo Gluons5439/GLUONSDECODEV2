@@ -51,7 +51,7 @@ public class TeleOp extends CommandOpMode {
                 .whenPressed(shootWithIntake);
 
 
-/**
+/*
         rishi.getGamepadButton(GamepadKeys.Button.CIRCLE)
                 .whenPressed(new SequentialCommandGroup(
                         new InstantCommand(() -> {
