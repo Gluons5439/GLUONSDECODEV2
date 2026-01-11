@@ -24,14 +24,14 @@ public class Shooter extends SubsystemBase {
     public ServoEx stopper;
     public ServoEx transfer;
 
-    public static double P = 0.000362;//0.006
+    public static double P = 0.000005;//0.006 0.000389
     public static double D = 0.0;
-    public static double F = 0.000005;//0.0008
+    public static double F =0.000376;//0.0008
     public PIDFController controller = new PIDFController(P, 0, D, F);
-    public static double TOLERANCE = 40;
+    public static double TOLERANCE = 160;
 
     public static double STOPPER_OPEN = 0.05;
-    public static double STOPPER_CLOSED = 0.267;
+    public static double STOPPER_CLOSED = 0.3;
     public static double TRANSFER_UP = 0.85;
     public static double TRANSFER_DOWN = 0.5;
     public static double HOOD_MIN = 0;
@@ -47,18 +47,21 @@ public class Shooter extends SubsystemBase {
     InterpLUT lutVelocity = new InterpLUT();
     InterpLUT lutHood = new InterpLUT();
     public double distance;
+    public double power;
     public boolean shooterBlah;
 
 
     public Shooter(HardwareMap hMap) {
         shooter1 = new Motor(hMap, "shooterMotor", Motor.GoBILDA.BARE);
         shooter2 = new Motor(hMap, "shooterMotor2", Motor.GoBILDA.BARE);
+        //shooter1.setInverted(true);
         shooter1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         shooter2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
 
         hood = new ServoEx(hMap, "HoodServo");
         stopper = new ServoEx(hMap, "StopperServo");
         transfer = new ServoEx(hMap, "TransferServo");
+        transfer.set(TRANSFER_DOWN);
 
         shooter1.setInverted(true);
         controller.setTolerance(TOLERANCE);
@@ -92,26 +95,40 @@ public class Shooter extends SubsystemBase {
         lutHood.createLUT();
         //lutHood.add();
        // Pose pos = Mosby.drivetrain.follower.getPose();
+        controller.setP(P);
+        controller.setF(F);
+
 
         shooterBlah = false;
+        distance = Math.hypot(
+                Mosby.goal.getX() - Mosby.drivetrain.follower.getPose().getX(),
+                Mosby.goal.getY() - Mosby.drivetrain.follower.getPose().getY()
+        );
 
 
     }
 
     public void update() {
+        if (!shooterBlah) {
+            controller.setSetPoint(0);
+            setPower(0);
+            return;
+        }
 
+        distance = Math.hypot(
+                Mosby.goal.getX() - Mosby.drivetrain.follower.getPose().getX(),
+                Mosby.goal.getY() - Mosby.drivetrain.follower.getPose().getY()
+        );
 
-       // controller.setP(P);
-        //controller.setD(D);
-        //controller.setF(F);
+        double currentVelocity = getVelocity();
+        double targetVelocity = lutVelocity.get(distance);
 
+        controller.setSetPoint(targetVelocity);
 
-       //this.autoPower(shooterBlah);
-        distance = Math.hypot(Mosby.goal.getX() - (Mosby.drivetrain.follower.getPose()).getX(), Mosby.goal.getY() - (Mosby.drivetrain.follower.getPose()).getY());
-        double velocity = getVelocity();
-        double power = controller.calculate(velocity);
+        power = controller.calculate(currentVelocity);
         setPower(power);
     }
+
     public void setShooter(boolean s) {
         shooterBlah = s;
     }
@@ -121,38 +138,31 @@ public class Shooter extends SubsystemBase {
     }
 
     public double getVelocity() {
-        return -shooter1.getCorrectedVelocity();
+        return shooter1.getCorrectedVelocity();
     }
 
     public void setPower(double power) {
+        power = clamp(power, -1.0, 1.0);
         shooter1.set(-power);
         shooter2.set(power);
     }
-    public void autoPower(boolean shooterOn , boolean hoodOn) {
-        if (shooterOn){
-            //  double velocity = clamp(lutVelocity.get(distance), 0, 1);
-          //  double hoodVal = clamp(lutHood.get(distance), 0, 0.7);
-            double velocity = lutVelocity.get(distance);
-            double power = controller.calculate(velocity);
-            controller.setSetPoint(velocity);
-        shooter1.set(power);
-        shooter2.set(-power);
-    }
-        if(hoodOn)
-        {
-            double hoodVal = lutHood.get(distance);
-            hood.set(hoodVal);
-        }
-        else
-        {
+
+    public void autoPower(boolean shooterOn, boolean hoodOn) {
+        shooterBlah = shooterOn;
+
+        if (shooterOn) {
+            controller.setP(P);
+            controller.setF(F);
+            controller.setSetPoint(lutVelocity.get(distance));
+        } else {
             controller.setSetPoint(0);
-            shooter1.set(0);
-            shooter2.set(0);
-            hood.set(0);
+        }
 
-
+        if (hoodOn) {
+            hood.set(lutHood.get(distance));
         }
     }
+
 
     public void closeStopper() {
         stopper.set(STOPPER_CLOSED);

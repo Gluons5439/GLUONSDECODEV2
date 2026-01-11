@@ -44,7 +44,7 @@ public class Mosby {
     public static Vector2d goal;
 
     public static int failsafeDelay = 100;
-    public static int flywheelThreshhold = 120;
+    public static int flywheelThreshhold = 100;
     public static double primeIntakeSpeed1 = 0.8;
     public static double primeIntakeSpeed2 = 0.5;
     public static double primeIntakeSpeed3 = 0;
@@ -60,6 +60,7 @@ public class Mosby {
         intake = new Intake(hardwareMap);
         shooter = new Shooter(hardwareMap);
 
+
         Storage.alliance = alliance;
 
         Mosby.drivetrain.follower.setStartingPose(matchState == MatchState.AUTO ? startPose : Storage.pose);
@@ -67,6 +68,7 @@ public class Mosby {
         CommandScheduler.getInstance().registerSubsystem(drivetrain, turret, intake, shooter);
 
         CommandScheduler.getInstance().schedule(reset());
+
     }
 
     public static void update(){
@@ -80,6 +82,7 @@ public class Mosby {
         return new InstantCommand(() -> {
             turret.enableAim = false;
             intake.setMinPower(0);
+            shooter.controller.reset();
             shooter.autoPower(false, false);
             shooter.setVelocity(Shooter.idleVeloMultiplier );
             shooter.closeStopper();
@@ -103,41 +106,40 @@ public class Mosby {
         });
     }
 
-    public static Command shoot(){
-        AtomicBoolean usedTimeout = new AtomicBoolean(false);
+    public static Command shoot() {
         return new SequentialCommandGroup(
+
+                // Wait until flywheel is spun up
                 new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
+
+                // Aim + open stopper + ensure shooter is enabled
                 new InstantCommand(() -> {
                     turret.enableAim = true;
-
-                    shooter.autoPower(true , true);
+                    shooter.autoPower(true, true);
+                   // shooter.setShooter(true);
                     shooter.openStopper();
-                    //shooter.raiseHood();
                 }),
-                new WaitUntilCommand(() -> Math.abs(Mosby.shooter.controller.getPositionError()) > flywheelThreshhold).raceWith(new WaitCommand(failsafeDelay).whenFinished(() -> usedTimeout.set(true))),
-                new ConditionalCommand(
-                        new SequentialCommandGroup(
-                                new InstantCommand(() -> {
-                                    shooter.hitTransfer();
-                                }),
-                                new WaitCommand(125),
-                                new InstantCommand(() -> {
-                                    shooter.downTransfer();
-                                }),
-                                new WaitCommand(125),
-                                new InstantCommand(() -> {
-                                    intake.setPower(1);
-                                    intake.setMinPower(1);
-                                }),
-                                new WaitCommand(250),
-                                new InstantCommand(() -> {
-                                    intake.setPower(0);
-                                    intake.setMinPower(0);
-                                })
-                        ),
-                        new InstantCommand(),
-                    usedTimeout::get
-                )
+
+                // Wait for flywheel speed drop (ball fired)
+                new WaitUntilCommand(() ->
+                        Math.abs(Mosby.shooter.controller.getPositionError()) > flywheelThreshhold
+                ),
+
+                // Feed sequence
+                new InstantCommand(() -> shooter.hitTransfer()),
+                new WaitCommand(125),
+                new InstantCommand(() -> shooter.downTransfer()),
+                new WaitCommand(125),
+
+                new InstantCommand(() -> {
+                    intake.setPower(1);
+                    intake.setMinPower(1);
+                }),
+                new WaitCommand(200),
+                new InstantCommand(() -> {
+                    intake.setPower(0);
+                    intake.setMinPower(0);
+                })
         );
     }
     public static Command shootWithIntake(){
@@ -161,13 +163,13 @@ public class Mosby {
                                 new WaitCommand(100),
                                 new InstantCommand(() -> {
                                     shooter.autoPower(true, false);
-                                    shooter.setHoodPercent(shooter.hood.getRawPosition()-0.05);
+                                    shooter.setHoodPercent(shooter.hood.getRawPosition()-0.2);
                                 }),
-                                new WaitCommand(100),
+                                new WaitCommand(120),
                                 new InstantCommand(() -> {
-                                    shooter.setHoodPercent(shooter.hood.getRawPosition()-0.05);
+                                    shooter.setHoodPercent(shooter.hood.getRawPosition()-0.2);
                                 }),
-                                new WaitCommand(50),
+                                new WaitCommand(150),
                                 new InstantCommand(() -> {
                                     shooter.hitTransfer();
                                 }),
@@ -203,13 +205,13 @@ public class Mosby {
     public static SequentialCommandGroup shootOptimized() {
         return new SequentialCommandGroup(
                 prime(),
-                shoot(),
-                prime(),
-                shoot(),
-                prime(),
-                shoot(),
-                new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
-                reset()
+                shoot()
+               // prime(),
+                //shoot(),
+               // prime(),
+               // shoot(),
+                //new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
+               // reset()
         );
     };
 }

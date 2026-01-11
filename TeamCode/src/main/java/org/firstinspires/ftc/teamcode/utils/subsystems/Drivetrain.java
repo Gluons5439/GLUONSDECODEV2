@@ -26,8 +26,8 @@ public class Drivetrain extends SubsystemBase {
     public void drive(Gamepad gamepad1) {
         double multiplier = gamepad1.left_bumper? slow : 1;
         follower.setTeleOpDrive(
-                -gamepad1.left_stick_y,
-                -gamepad1.left_stick_x,
+                gamepad1.left_stick_y,
+                gamepad1.left_stick_x,
                 -gamepad1.right_stick_x,
                 false
         );

@@ -121,6 +121,8 @@ public class Blue12Ball extends CommandOpMode {
         telemetry.addData("turret angle", Math.toDegrees(Mosby.turret.getAngle()));
         telemetry.addData("setpoint", Mosby.turret.controller.getSetPoint());
         telemetry.addData("goal", Mosby.goal);
+        telemetry.addData("shooter current velocity", Mosby.shooter.getVelocity());
+        telemetry.addData("shooter set Velocity", Mosby.shooter.power);
         telemetry.update();
     }
 }
