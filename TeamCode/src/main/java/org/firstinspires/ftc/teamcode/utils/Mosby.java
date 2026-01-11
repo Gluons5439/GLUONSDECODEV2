@@ -157,7 +157,7 @@ public class Mosby {
                                     intake.setPower(1);
                                     intake.setMinPower(1);
                                 }),
-                                new WaitCommand(200),
+                                new WaitCommand(150),
                                 new InstantCommand(() -> {
                                     intake.setPower(0);
                                     intake.setMinPower(0);
@@ -186,11 +186,11 @@ public class Mosby {
                                 }),
                                 new WaitCommand(100),
                                 new InstantCommand(() -> {
-                                    shooter.setHoodPercent(shooter.hood.getRawPosition()-0.2);
+                                    shooter.setCurrentHoodPercent(0.7);
                                 }),
                                 new WaitCommand(120),
                                 new InstantCommand(() -> {
-                                    shooter.setHoodPercent(shooter.hood.getRawPosition()-0.2);
+                                    shooter.setCurrentHoodPercent(0.7);
                                 }),
                                 new WaitCommand(150),
                                 new InstantCommand(() -> {

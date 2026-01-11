@@ -189,4 +189,5 @@ public class Shooter extends SubsystemBase {
     public void setHoodPercent(double percent) {
         hood.set( HOOD_MAX * percent);
     }
+    public void setCurrentHoodPercent(double percent) {hood.set(hood.getRawPosition()*percent);}
 }
