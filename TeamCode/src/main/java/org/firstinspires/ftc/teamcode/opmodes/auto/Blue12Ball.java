@@ -22,14 +22,13 @@ public class Blue12Ball extends CommandOpMode {
         Mosby.drivetrain.follower.setMaxPower(0.8);
 
         schedule(new SequentialCommandGroup(
-
-                new InstantCommand(() -> {
-                    Mosby.intake.setPower(0.5);
-                    Mosby.intake.setMinPower(0.5);
-                }),
                 new FollowPathCommand(Mosby.drivetrain.follower, paths.startToScore),
 
-                Mosby.shootOptimized(),
+                Mosby.prime(),
+                Mosby.shoot(),
+                Mosby.shoot(),
+                Mosby.shoot(),
+                Mosby.reset(),
 
                 new InstantCommand(() -> {
                     Mosby.drivetrain.follower.setMaxPower(0.8);
@@ -42,12 +41,16 @@ public class Blue12Ball extends CommandOpMode {
 
                 new InstantCommand(() -> {
                     Mosby.drivetrain.follower.setMaxPower(1);
-                    Mosby.intake.setPower(0.5);
-                    Mosby.intake.setMinPower(0.5);
+                    //Mosby.intake.setPower(0.5);
+                    //Mosby.intake.setMinPower(0.5);
                 }),
                 new FollowPathCommand(Mosby.drivetrain.follower, paths.scoreGPP),
 
-                Mosby.shootOptimized(),
+                Mosby.prime(),
+                Mosby.shoot(),
+                Mosby.shoot(),
+                Mosby.shoot(),
+                Mosby.reset(),
 
                 new InstantCommand(() -> {
                     Mosby.drivetrain.follower.setMaxPower(0.9);
@@ -65,12 +68,16 @@ public class Blue12Ball extends CommandOpMode {
 
                 new InstantCommand(() -> {
                     Mosby.drivetrain.follower.setMaxPower(1);
-                    Mosby.intake.setPower(0.5);
-                    Mosby.intake.setMinPower(0.5);
+                    //Mosby.intake.setPower(0.5);
+                   // Mosby.intake.setMinPower(0.5);
                 }),
                 new FollowPathCommand(Mosby.drivetrain.follower, paths.scorePGP),
 
-                Mosby.shootOptimized(),
+                Mosby.prime(),
+                Mosby.shoot(),
+                Mosby.shoot(),
+                Mosby.shoot(),
+                Mosby.reset(),
 
                 new InstantCommand(() -> {
                     Mosby.drivetrain.follower.setMaxPower(0.8);
@@ -87,12 +94,16 @@ public class Blue12Ball extends CommandOpMode {
 
                 new InstantCommand(() -> {
                     Mosby.drivetrain.follower.setMaxPower(0.8);
-                    Mosby.intake.setPower(0.5);
-                    Mosby.intake.setMinPower(0.5);
+                   // Mosby.intake.setPower(0.5);
+                    //Mosby.intake.setMinPower(0.5);
                 }),
                 new FollowPathCommand(Mosby.drivetrain.follower, paths.scorePPG),
 
-                Mosby.shootOptimized(),
+                Mosby.prime(),
+                Mosby.shoot(),
+                Mosby.shoot(),
+                Mosby.shoot(),
+                Mosby.reset(),
 
                 new InstantCommand(() -> {
                     Mosby.drivetrain.follower.setMaxPower(1);

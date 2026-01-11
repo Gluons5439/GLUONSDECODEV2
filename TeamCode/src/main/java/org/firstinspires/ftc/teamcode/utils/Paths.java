@@ -22,17 +22,17 @@ public class Paths {
     public PathChain park;
     public Pose startPose;
     public Pose shootingPose = new Pose(67,19, Math.toRadians(120));
-    public Pose intakeGPP1Pose = new Pose(42, 35, shootingPose.getHeading());
-    public Pose intakeGPP2Pose = new Pose(21.5, 35, shootingPose.getHeading());
-    public Pose openGatePose = new Pose(14, 75, shootingPose.getHeading());
+    public Pose intakeGPP1Pose = new Pose(42, 35, Math.toRadians(180));
+    public Pose intakeGPP2Pose = new Pose(21.5, 35, intakeGPP1Pose.getHeading());
+    public Pose openGatePose = new Pose(14, 75, intakeGPP1Pose.getHeading());
     public Pose openGateControl = new Pose(28,77);
-    public Pose intakePGP1Pose = new Pose(43.5, 60, shootingPose.getHeading());
-    public Pose intakePGP2Pose = new Pose(20, 60, shootingPose.getHeading());
+    public Pose intakePGP1Pose = new Pose(43.5, 60, intakeGPP1Pose.getHeading());
+    public Pose intakePGP2Pose = new Pose(20, 60, intakeGPP1Pose.getHeading());
     public Pose scorePGPControl = new Pose(40, 55);
-    public Pose intakePPG1Pose = new Pose(42,84, shootingPose.getHeading());
-    public Pose intakePPG2Pose = new Pose(18.5, 84, shootingPose.getHeading());
+    public Pose intakePPG1Pose = new Pose(42,84, intakeGPP1Pose.getHeading());
+    public Pose intakePPG2Pose = new Pose(18.5, 84, intakeGPP1Pose.getHeading());
     public Pose intakePPG1Control = new Pose(57, 36);
-    public Pose parkPose = new Pose(42, 19, shootingPose.getHeading());
+    public Pose parkPose = new Pose(42, 19, intakeGPP1Pose.getHeading());
 
     public Paths(Follower follower, Mosby.Alliance alliance) {
         startPose = Mosby.startPose;
@@ -64,7 +64,7 @@ public class Paths {
                 .addPath(
                         new BezierLine(shootingPose, intakeGPP1Pose)
                 )
-                .setConstantHeadingInterpolation(shootingPose.getHeading())
+                .setLinearHeadingInterpolation(shootingPose.getHeading(), intakeGPP1Pose.getHeading())
                 .build();
 
         intakeGPP2 = follower

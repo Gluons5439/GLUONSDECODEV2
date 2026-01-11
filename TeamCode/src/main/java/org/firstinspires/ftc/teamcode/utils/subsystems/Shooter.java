@@ -107,7 +107,7 @@ public class Shooter extends SubsystemBase {
 
 
        //this.autoPower(shooterBlah);
-        //distance = Math.hypot(Mosby.goal.getX() - (Mosby.drivetrain.follower.getPose()).getX(), Mosby.goal.getY() - (Mosby.drivetrain.follower.getPose()).getY());
+        distance = Math.hypot(Mosby.goal.getX() - (Mosby.drivetrain.follower.getPose()).getX(), Mosby.goal.getY() - (Mosby.drivetrain.follower.getPose()).getY());
         double velocity = getVelocity();
         double power = controller.calculate(velocity);
         setPower(power);
