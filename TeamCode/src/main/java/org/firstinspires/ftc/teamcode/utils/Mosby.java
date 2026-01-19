@@ -27,13 +27,20 @@ public class Mosby {
     }
     public enum Alliance {
         RED,
-        BLUE
+        BLUE,
+
+        REDCLOSE,
+        BLUECLOSE
     }
 
     public static final Pose BLUE_START_POSE = new Pose(64, 8, Math.toRadians(90));
+    public static final Pose CLOSE_BLUE_START_POSE = new Pose(21, 123, Math.toRadians(144));
     public static final Pose RED_START_POSE = new Pose(144-BLUE_START_POSE.getX(), BLUE_START_POSE.getY(), Math.toRadians(90));
-    public static final Vector2d BLUE_GOAL = new Vector2d(16.5, 132);
-    public static final Vector2d RED_GOAL = new Vector2d(127.5, 132);
+    public static final Pose CLOSE_RED_START_POSE = new Pose(144-CLOSE_BLUE_START_POSE.getX(), CLOSE_BLUE_START_POSE.getY(), Math.toRadians(36));
+    public static final Vector2d BLUE_GOALPIDF = new Vector2d(16.5, 132);
+    public static final Vector2d RED_GOALPIDF = new Vector2d(127.5, 132);
+    public static final Vector2d BLUE_GOAL = new Vector2d(0, 144);
+    public static final Vector2d RED_GOAL = new Vector2d(144, 144);
     public static MatchState matchState;
     public static Alliance alliance;
     public static Drivetrain drivetrain;
@@ -42,6 +49,7 @@ public class Mosby {
     public static Shooter shooter;
     public static Pose startPose;
     public static Vector2d goal;
+    public static Vector2d goalShooter;
 
     public static int failsafeDelay = 100;
     public static int flywheelThreshhold = 100;
@@ -52,8 +60,35 @@ public class Mosby {
     public static void init(HardwareMap hardwareMap, MatchState matchState, Alliance alliance) {
         Mosby.matchState = matchState;
         Mosby.alliance = alliance;
-        Mosby.startPose = alliance == Alliance.RED? RED_START_POSE : BLUE_START_POSE;
-        Mosby.goal = alliance == Alliance.RED? RED_GOAL : BLUE_GOAL;
+        //Mosby.startPose = alliance == Alliance.RED? RED_START_POSE : BLUE_START_POSE;
+        //Mosby.goal = alliance == Alliance.RED? RED_GOAL : BLUE_GOAL;
+        //Mosby.goalShooter = alliance == Alliance.RED? RED_GOALPIDF : BLUE_GOALPIDF;
+        switch (alliance) {
+            case RED:
+                Mosby.startPose = RED_START_POSE;
+                Mosby.goal = RED_GOAL;
+                Mosby.goalShooter = RED_GOALPIDF;
+                break;
+
+            case BLUE:
+                Mosby.startPose = BLUE_START_POSE;
+                Mosby.goal = BLUE_GOAL;
+                Mosby.goalShooter = BLUE_GOALPIDF;
+                break;
+
+            case REDCLOSE:
+                Mosby.startPose = CLOSE_RED_START_POSE;
+                Mosby.goal = RED_GOAL;
+                Mosby.goalShooter = RED_GOALPIDF;
+                break;
+
+            case BLUECLOSE:
+                Mosby.startPose = CLOSE_BLUE_START_POSE;
+                Mosby.goal = BLUE_GOAL;
+                Mosby.goalShooter = BLUE_GOALPIDF;
+                break;
+        }
+
 
         drivetrain = new Drivetrain(hardwareMap);
         turret = new Turret(hardwareMap);
@@ -64,10 +99,12 @@ public class Mosby {
         Storage.alliance = alliance;
 
         Mosby.drivetrain.follower.setStartingPose(matchState == MatchState.AUTO ? startPose : Storage.pose);
+        Mosby.drivetrain.follower.update();
 
         CommandScheduler.getInstance().registerSubsystem(drivetrain, turret, intake, shooter);
 
         CommandScheduler.getInstance().schedule(reset());
+        turret.enableAim = false;
 
     }
 
@@ -81,12 +118,13 @@ public class Mosby {
     public static InstantCommand reset() {
         return new InstantCommand(() -> {
             turret.enableAim = false;
+            turret.AUTOenableAim = false;
             intake.setMinPower(0);
             shooter.controller.reset();
             shooter.autoPower(false, false);
             shooter.setVelocity(Shooter.idleVeloMultiplier );
             shooter.closeStopper();
-            //shooter.resetHood();1
+            shooter.resetHood();
         });
     }
 
@@ -96,7 +134,18 @@ public class Mosby {
             intake.setPower(0);
             intake.setMinPower(0);
 
-            shooter.openStopper();
+            //shooter.openStopper();
+            shooter.autoPower(true, true); // ONLY place
+        });
+    }
+
+    public static InstantCommand prime2() {
+        return new InstantCommand(() -> {
+            turret.AUTOenableAim = true;
+            intake.setPower(0);
+            intake.setMinPower(0);
+
+            //shooter.openStopper();
             shooter.autoPower(true, true); // ONLY place
         });
     }
@@ -137,16 +186,16 @@ public class Mosby {
         );
     }
     public static Command shoot(){
-        AtomicBoolean usedTimeout = new AtomicBoolean(false);
+        AtomicBoolean usedTimeout = new AtomicBoolean(true);
         return new SequentialCommandGroup(
                 new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
                 new InstantCommand(() -> {
-                    turret.enableAim = true;
+                  //  turret.enableAim = true;
                     shooter.openStopper();
                     //shooter.raiseHood();
                 }),
-                new WaitUntilCommand(() -> Math.abs(Mosby.shooter.controller.getPositionError()) > flywheelThreshhold).raceWith(new WaitCommand(failsafeDelay).whenFinished(() -> usedTimeout.set(true))),
-                new ConditionalCommand(
+
+        new ConditionalCommand(
                         new SequentialCommandGroup(
                                 new InstantCommand(() -> shooter.hitTransfer()),
                                 new WaitCommand(125),
@@ -168,17 +217,16 @@ public class Mosby {
                 )
         );
     }
-    public static Command shootWithIntake(){
-        AtomicBoolean usedTimeout = new AtomicBoolean(false);
+    public static Command shootWithIntake() {
         return new SequentialCommandGroup(
-                new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
                 new InstantCommand(() -> {
-                    turret.enableAim = true;
                     shooter.openStopper();
-                    //shooter.raiseHood();
                 }),
-                new WaitUntilCommand(() -> Math.abs(Mosby.shooter.controller.getPositionError()) > flywheelThreshhold).raceWith(new WaitCommand(failsafeDelay).whenFinished(() -> usedTimeout.set(true))),
+
+                new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
+
                 new ConditionalCommand(
+                        // TRUE branch
                         new SequentialCommandGroup(
                                 new InstantCommand(() -> {
                                     intake.setPower(1);
@@ -188,11 +236,11 @@ public class Mosby {
                                 new InstantCommand(() -> {
                                     shooter.setCurrentHoodPercent(0.7);
                                 }),
-                                new WaitCommand(120),
+                                new WaitCommand(150),
                                 new InstantCommand(() -> {
                                     shooter.setCurrentHoodPercent(0.7);
                                 }),
-                                new WaitCommand(150),
+                                new WaitCommand(130),
                                 new InstantCommand(() -> {
                                     shooter.hitTransfer();
                                 }),
@@ -204,11 +252,16 @@ public class Mosby {
                                 }),
                                 reset()
                         ),
+
+                        // FALSE branch (do nothing)
                         new InstantCommand(),
-                        usedTimeout::get
+
+                        // condition
+                        () -> Mosby.shooter.controller.atSetPoint()
                 )
         );
     }
+
 
 
 

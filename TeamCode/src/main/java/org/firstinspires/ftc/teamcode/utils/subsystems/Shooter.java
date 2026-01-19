@@ -24,13 +24,13 @@ public class Shooter extends SubsystemBase {
     public ServoEx stopper;
     public ServoEx transfer;
 
-    public static double P = 0.000005;//0.006 0.000389
+    public static double P = 0.001;//0.006 0.000389
     public static double D = 0.0;
-    public static double F =0.000376;//0.0008
+    public static double F =0.00038;//0.0008
     public PIDFController controller = new PIDFController(P, 0, D, F);
-    public static double TOLERANCE = 100;
+    public static double TOLERANCE = 80;
 
-    public static double STOPPER_OPEN = 0.05;
+    public static double STOPPER_OPEN = 0.1;
     public static double STOPPER_CLOSED = 0.3;
     public static double TRANSFER_UP = 0.85;
     public static double TRANSFER_DOWN = 0.5;
@@ -49,7 +49,8 @@ public class Shooter extends SubsystemBase {
     public double distance;
     public double power;
     public boolean shooterBlah;
-
+    public Pose pos;
+    //double currentVelocity = 0;
 
     public Shooter(HardwareMap hMap) {
         shooter1 = new Motor(hMap, "shooterMotor", Motor.GoBILDA.BARE);
@@ -57,6 +58,7 @@ public class Shooter extends SubsystemBase {
         //shooter1.setInverted(true);
         shooter1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         shooter2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+
 
         hood = new ServoEx(hMap, "HoodServo");
         stopper = new ServoEx(hMap, "StopperServo");
@@ -66,44 +68,39 @@ public class Shooter extends SubsystemBase {
         shooter1.setInverted(true);
         controller.setTolerance(TOLERANCE);
         controller.setSetPoint(0);
-        lutVelocity.add(31.25, 1600);
-        lutVelocity.add(45.25, 1720);
-        lutVelocity.add(51, 1840);
-        lutVelocity.add(59.5, 1860);
-        lutVelocity.add(65.75, 1960);
-        lutVelocity.add(78.25, 1960);
-        lutVelocity.add(88.25, 2060);
-        lutVelocity.add(99.25, 2200);
-        lutVelocity.add(115, 2340);
-        lutVelocity.add(131.25, 2380);
-        lutVelocity.add(138.5, 2430);
-        lutVelocity.add(148,2500);
+        lutVelocity.add(27.5, 1500);
+        lutVelocity.add(39, 1560);
+        lutVelocity.add(52.5, 1620);
+        lutVelocity.add(65, 1660);
+        lutVelocity.add(75.5, 1680);
+        lutVelocity.add(88.5, 1740);
+        lutVelocity.add(105.5, 1840);
+        lutVelocity.add(120.5, 1900);
+        lutVelocity.add(133.5, 2020);
+        lutVelocity.add(148.5, 2180);
+        lutVelocity.add(163.5, 2240);
 
-        lutHood.add(31.25, 0.1);
-        lutHood.add(45.25, 0.3);
-        lutHood.add(51, 0.33);
-        lutHood.add(59.5, 0.36);
-        lutHood.add(65.75, 0.38);
-        lutHood.add(78.25, 0.48);
-        lutHood.add(88.25, 0.48);
-        lutHood.add(99.25, 0.54);
-        lutHood.add(115, 0.54);
-        lutHood.add(131.25, 0.62);
-        lutHood.add(138.5, 0.62);
-        lutHood.add(148,0.62);
+
+        lutHood.add(27.5, 0.02);
+        lutHood.add(39, 0.134);
+        lutHood.add(52.5, 0.16);
+        lutHood.add(65, 0.35);
+        lutHood.add(75.5, 0.35);
+        lutHood.add(88.5, 0.39);
+        lutHood.add(105.5, 0.42);
+        lutHood.add(120.5, 0.44);
+        lutHood.add(133.5, 0.5);
+        lutHood.add(148.5, 0.52);
+        lutHood.add(163.5, 0.56);
         lutVelocity.createLUT();
         lutHood.createLUT();
-        //lutHood.add();
-       // Pose pos = Mosby.drivetrain.follower.getPose();
+        pos = Mosby.drivetrain.follower.getPose();
         controller.setP(P);
         controller.setF(F);
 
 
         shooterBlah = false;
-        distance = Math.hypot(
-                Mosby.goal.getX() - Mosby.drivetrain.follower.getPose().getX(),
-                Mosby.goal.getY() - Mosby.drivetrain.follower.getPose().getY()
-        );
+      distance = Math.hypot(Mosby.goalShooter.getX()-Storage.pose.getX(),Mosby.goalShooter.getY()-Storage.pose.getY());
 
 
     }
@@ -114,19 +111,20 @@ public class Shooter extends SubsystemBase {
             setPower(0);
             return;
         }
+        pos = Mosby.drivetrain.follower.getPose();
 
         distance = Math.hypot(
-                Mosby.goal.getX() - Mosby.drivetrain.follower.getPose().getX(),
-                Mosby.goal.getY() - Mosby.drivetrain.follower.getPose().getY()
+               Mosby.goalShooter.getX() - pos.getX(),
+               Mosby.goalShooter.getY() - pos.getY()
         );
 
         double currentVelocity = getVelocity();
-        double targetVelocity = lutVelocity.get(distance);
+       double targetVelocity = lutVelocity.get(distance);
 
         controller.setSetPoint(targetVelocity);
 
-        power = controller.calculate(currentVelocity);
-        setPower(power);
+       power = controller.calculate(currentVelocity);
+       setPower(power);
     }
 
     public void setShooter(boolean s) {
@@ -135,6 +133,7 @@ public class Shooter extends SubsystemBase {
 
     public void setVelocity(double velocity) {
         controller.setSetPoint(velocity);
+        //currentVelocity = velocity;
     }
 
     public double getVelocity() {
@@ -153,7 +152,7 @@ public class Shooter extends SubsystemBase {
         if (shooterOn) {
             controller.setP(P);
             controller.setF(F);
-            controller.setSetPoint(lutVelocity.get(distance));
+            controller.setSetPoint(lutVelocity.get(distance) );
         } else {
             controller.setSetPoint(0);
         }

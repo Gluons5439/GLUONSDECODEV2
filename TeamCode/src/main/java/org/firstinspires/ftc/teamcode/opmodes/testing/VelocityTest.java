@@ -15,8 +15,8 @@ public class VelocityTest extends CommandOpMode {
     public static double hood;
     public static double velo = 0;
 
-    public static double P = 0;
-    public static double F = 0;
+    public static double P = 0.000005;
+    public static double F = 0.000385;
 
     JoinedTelemetry tele;
 
@@ -36,9 +36,9 @@ public class VelocityTest extends CommandOpMode {
         shooter.setVelocity(velo);
         shooter.update();
 
-        tele.addData("velocity", -shooter.shooter1.getCorrectedVelocity());
+        tele.addData("velocity", shooter.shooter1.getCorrectedVelocity());
         tele.addData("hoodPercent", shooter.hood.getRawPosition());
-        tele.addData("raw velocity", -shooter.shooter1.encoder.getRawVelocity());
+        tele.addData("raw velocity", shooter.shooter1.encoder.getRawVelocity());
         tele.addData("target", velo);
         tele.addData("power", shooter.shooter2.get());
         tele.update();

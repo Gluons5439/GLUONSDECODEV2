@@ -13,19 +13,20 @@ import org.firstinspires.ftc.teamcode.utils.Storage;
 @Configurable
 public class Turret extends SubsystemBase {
     public Motor motor;
-    public double ticksPerRadian = 306.532420395;
-    public static double p = 0;//3
-    public static double d = .00;//0.03
+    public double ticksPerRadian = 311.360120335;
+    public static double p = 3;//3
+    public static double d = .04;//0.03
     public PIDFController controller = new PIDFController(p, 0, d, 0);
     public double tolerance = 1;
 
     public boolean enableAim = false;
+    public boolean AUTOenableAim = false;
     public double homePos = 0;
     public Turret(HardwareMap hMap) {
         motor = new Motor(hMap, "turretMotor", Motor.GoBILDA.RPM_223);
         motor.stopAndResetEncoder();
         motor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
-        motor.setInverted(true);
+        motor.setInverted(false);
         controller.setTolerance(tolerance);
         homePos = 0;
     }
@@ -51,16 +52,31 @@ public class Turret extends SubsystemBase {
 
             double robotAngle = Mosby.drivetrain.follower.getHeading();
             setAngle(targetAngle - robotAngle);
-        }else {
+        }else if(AUTOenableAim) {
+            Pose pos = Mosby.drivetrain.follower.getPose();
+
+            double deltaX = Mosby.goalShooter.getX() - pos.getX();
+            double deltaY = Mosby.goalShooter.getY() - pos.getY();
+
+            double targetAngle = Math.atan2(deltaY, deltaX);
+
+            double robotAngle = Mosby.drivetrain.follower.getHeading();
+            setAngle(targetAngle - robotAngle);
+        } else {
             setAngle(homePos);
 
         }
+
+
 
         controller.setP(p);
         controller.setD(d);
         double angle = getAngle();
         Storage.turretAngle = angle;
         motor.set(controller.calculate(angle));
+
+
+
     }
 
 

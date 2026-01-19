@@ -13,16 +13,19 @@ import static com.seattlesolvers.solverslib.util.MathUtils.clamp;
 public class ShooterPIDFTuning extends OpMode {
 
     // ======= TUNABLES (LIVE VIA DASHBOARD / PANELS) =======
-    public static double P = 0.0003;
-    public static double F = 0.000005;
+    public static double P = 0.001;
+    public static double F = 0.00039;
 
     public static double TARGET_VELOCITY = 2000; // ticks/sec
     public static boolean SHOOTER_ON = false;
+    public static double INTAKE_POWER = 0;
 
     // =====================================================
 
     private Motor shooter1;
     private Motor shooter2;
+
+    private Motor intake;
 
     private PIDFController controller;
 
@@ -30,6 +33,7 @@ public class ShooterPIDFTuning extends OpMode {
     public void init() {
         shooter1 = new Motor(hardwareMap, "shooterMotor", Motor.GoBILDA.BARE);
         shooter2 = new Motor(hardwareMap, "shooterMotor2", Motor.GoBILDA.BARE);
+        intake = new Motor(hardwareMap, "Intake", Motor.GoBILDA.RPM_1150);
 
        // shooter1.setInverted(true);
 
@@ -62,6 +66,7 @@ public class ShooterPIDFTuning extends OpMode {
             controller.reset();
             power = 0;
         }
+        intake.set(INTAKE_POWER);
 
         setPower(power);
 

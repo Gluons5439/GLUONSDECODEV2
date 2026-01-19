@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.pedropathing.geometry.Pose;
 import com.seattlesolvers.solverslib.command.Command;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
@@ -33,13 +34,14 @@ public class TeleOp extends CommandOpMode {
 
         // Aaryan controls
         aaryan.getGamepadButton(GamepadKeys.Button.B)
-                .toggleWhenPressed(prime);
+                .whenPressed(prime);
         aaryan.getGamepadButton(GamepadKeys.Button.A)
-                .toggleWhenPressed( new SequentialCommandGroup(
+                .whenPressed( new SequentialCommandGroup(
                         new InstantCommand(() -> {
                             prime.cancel();
                             shoot.cancel();
                             shootWithIntake.cancel();
+
                         }),
                         Mosby.reset()
                 ));
@@ -49,6 +51,18 @@ public class TeleOp extends CommandOpMode {
 
         aaryan.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                 .whenPressed(shootWithIntake);
+        rishi.getGamepadButton(GamepadKeys.Button.B)
+                .whenPressed(new InstantCommand(() -> {
+                    if(Storage.alliance == Mosby.Alliance.BLUE) {
+                        Pose b = new Pose(135.5, 7.8125, Math.toRadians(90));
+                        Mosby.drivetrain.follower.setPose(b);
+                        Storage.pose = b;
+                    } else {
+                        Pose r = new Pose(8.5, 7.8125, Math.toRadians(90));
+                        Mosby.drivetrain.follower.setPose(r);
+                        Storage.pose = r;
+                    }
+                }) );
 
 
 /*
@@ -138,6 +152,12 @@ public class TeleOp extends CommandOpMode {
 
 
         telemetry.addData("error", Mosby.shooter.controller.getPositionError());
+        telemetry.addData("position", Mosby.drivetrain.follower.getPose().getX());
+        telemetry.addData("position", Mosby.drivetrain.follower.getPose().getY());
+        telemetry.addData("goal", Mosby.goalShooter.getX());
+        telemetry.addData("goal", Mosby.goalShooter.getY());
+        telemetry.addData("distance", Mosby.shooter.distance);
+        telemetry.addData("ActualVelo", Mosby.shooter.controller.getSetPoint());
         telemetry.addData("atSetPoint", Mosby.shooter.controller.atSetPoint());
         telemetry.addData("velo", Mosby.shooter.getVelocity());
         telemetry.addData("storage angle", Storage.turretAngle);
