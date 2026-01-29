@@ -57,6 +57,7 @@ public class TeleOp extends CommandOpMode {
                         Pose b = new Pose(135.5, 7.8125, Math.toRadians(90));
                         Mosby.drivetrain.follower.setPose(b);
                         Storage.pose = b;
+
                     } else {
                         Pose r = new Pose(8.5, 7.8125, Math.toRadians(90));
                         Mosby.drivetrain.follower.setPose(r);

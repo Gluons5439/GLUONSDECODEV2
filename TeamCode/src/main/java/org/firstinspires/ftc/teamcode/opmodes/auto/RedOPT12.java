@@ -12,66 +12,35 @@ import org.firstinspires.ftc.teamcode.utils.Paths;
 import org.firstinspires.ftc.teamcode.utils.Mosby;
 
 @Autonomous(preselectTeleOp="TeleOp")
-public class Red12Ball extends CommandOpMode {
+public class RedOPT12 extends CommandOpMode {
 
     Paths paths;
 
     @Override
     public void initialize() {
-        Mosby.init(hardwareMap, Mosby.MatchState.AUTO, Mosby.Alliance.RED);
-        paths = new Paths(Mosby.drivetrain.follower, Mosby.Alliance.RED);
+        Mosby.init(hardwareMap, Mosby.MatchState.AUTO, Mosby.Alliance.REDCLOSE);
+        paths = new Paths(Mosby.drivetrain.follower, Mosby.Alliance.REDCLOSE);
         Mosby.drivetrain.follower.setMaxPower(0.8);
 
+
         schedule(new SequentialCommandGroup(
-                new FollowPathCommand(Mosby.drivetrain.follower, paths.startToScore),
+
+                new FollowPathCommand(Mosby.drivetrain.follower, paths.ClosestartToScore),
                 Mosby.prime(),
                 new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
                 Mosby.shootWithIntake(),
                 Mosby.reset(),
+
 
                 new InstantCommand(() -> {
                     Mosby.drivetrain.follower.setMaxPower(0.8);
-                    Mosby.intake.setPower(0);
-                }),
-                new FollowPathCommand(Mosby.drivetrain.follower, paths.intakeGPP1),
-                new InstantCommand(() -> Mosby.intake.setPower(0.8)),
-                new FollowPathCommand(Mosby.drivetrain.follower, paths.intakeGPP2),
-                new WaitCommand(400),
-                new InstantCommand(() -> Mosby.intake.setPower(0)),
-
-                new InstantCommand(() -> {
-                    Mosby.drivetrain.follower.setMaxPower(1);
-                    //Mosby.intake.setPower(0.5);
-                    //Mosby.intake.setMinPower(0.5);
-                }),
-                new FollowPathCommand(Mosby.drivetrain.follower, paths.scoreGPP),
-                Mosby.prime(),
-                new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
-                Mosby.shootWithIntake(),
-                Mosby.reset(),
-
-                new InstantCommand(() -> {
-                    Mosby.drivetrain.follower.setMaxPower(1);
-                    Mosby.intake.setPower(0);
-                }),
-                new FollowPathCommand(Mosby.drivetrain.follower, paths.intakePGP1),
-                new WaitCommand(150),
-                new InstantCommand(() -> {
                     Mosby.intake.setPower(1);
-                    Mosby.drivetrain.follower.setMaxPower(0.8);
                 }),
-                new FollowPathCommand(Mosby.drivetrain.follower, paths.intakePGP2),
-                new WaitCommand(400),
+                new FollowPathCommand(Mosby.drivetrain.follower, paths.CloseintakePPG),
                 new InstantCommand(() -> Mosby.intake.setPower(0)),
 
 
-
-                new InstantCommand(() -> {
-                    Mosby.drivetrain.follower.setMaxPower(1);
-                    //Mosby.intake.setPower(0.5);
-                    // Mosby.intake.setMinPower(0.5);
-                }),
-                new FollowPathCommand(Mosby.drivetrain.follower, paths.scorePGP),
+                new FollowPathCommand(Mosby.drivetrain.follower, paths.ClosescorePPG),
                 Mosby.prime(),
                 new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
                 Mosby.shootWithIntake(),
@@ -80,35 +49,46 @@ public class Red12Ball extends CommandOpMode {
 
                 new InstantCommand(() -> {
                     Mosby.drivetrain.follower.setMaxPower(1);
-                    Mosby.intake.setPower(0);
-                }),
-                new FollowPathCommand(Mosby.drivetrain.follower, paths.intakePPG1),
-                new WaitCommand(350),
-                new InstantCommand(() -> {
                     Mosby.intake.setPower(1);
-                    Mosby.drivetrain.follower.setMaxPower(0.8);
                 }),
-                new FollowPathCommand(Mosby.drivetrain.follower, paths.intakePPG2),
-                new WaitCommand(400),
+                new FollowPathCommand(Mosby.drivetrain.follower, paths.CloseintakePGP1),
+                new WaitCommand(100),
                 new InstantCommand(() -> Mosby.intake.setPower(0)),
+                new FollowPathCommand(Mosby.drivetrain.follower, paths.turn1),
 
-                new InstantCommand(() -> {
-                    Mosby.drivetrain.follower.setMaxPower(1);
-                    // Mosby.intake.setPower(0.5);
-                    //Mosby.intake.setMinPower(0.5);
-                }),
-                new FollowPathCommand(Mosby.drivetrain.follower, paths.scorePPG),
+
+                new InstantCommand(() -> Mosby.drivetrain.follower.setMaxPower(1)),
+                new FollowPathCommand(Mosby.drivetrain.follower, paths.ClosescorePGP),
                 Mosby.prime(),
                 new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
                 Mosby.shootWithIntake(),
                 Mosby.reset(),
+
+
+                new InstantCommand(() -> {
+                    Mosby.drivetrain.follower.setMaxPower(1);
+                    Mosby.intake.setPower(1);
+                }),
+                new FollowPathCommand(Mosby.drivetrain.follower, paths.CloseintakeGPP1),
+                new FollowPathCommand(Mosby.drivetrain.follower, paths.CloseintakeGPP2),
+                new WaitCommand(400),
+                new InstantCommand(() -> Mosby.intake.setPower(0)),
+
+
+                new InstantCommand(() -> Mosby.drivetrain.follower.setMaxPower(1)),
+                new FollowPathCommand(Mosby.drivetrain.follower, paths.ClosescoreGPP),
+                Mosby.prime(),
+                new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
+                Mosby.shootWithIntake(),
+                Mosby.reset(),
+
 
                 new InstantCommand(() -> {
                     Mosby.drivetrain.follower.setMaxPower(1);
                     Mosby.intake.setPower(0);
                     Mosby.intake.setMinPower(0);
                 }),
-                new FollowPathCommand(Mosby.drivetrain.follower, paths.park)
+                new FollowPathCommand(Mosby.drivetrain.follower, paths.Closepark)
         ));
     }
 

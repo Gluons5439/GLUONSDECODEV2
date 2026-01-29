@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.utils.Paths;
 import org.firstinspires.ftc.teamcode.utils.Mosby;
 
 @Autonomous(preselectTeleOp="TeleOp")
-public class BaryonsAutoRed extends CommandOpMode {
+public class BaryonsAutoRedV2 extends CommandOpMode {
 
     Paths paths;
 
@@ -24,27 +24,6 @@ public class BaryonsAutoRed extends CommandOpMode {
 
         schedule(new SequentialCommandGroup(
                 new FollowPathCommand(Mosby.drivetrain.follower, paths.startToScore1),
-                Mosby.prime(),
-                new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
-                Mosby.shootWithIntake(),
-                Mosby.reset(),
-
-                new InstantCommand(() -> {
-                    Mosby.drivetrain.follower.setMaxPower(1);
-                    Mosby.intake.setPower(0);
-                }),
-                new FollowPathCommand(Mosby.drivetrain.follower, paths.intakegpp1),
-                new InstantCommand(() -> Mosby.intake.setPower(1)),
-                new FollowPathCommand(Mosby.drivetrain.follower, paths.intakegpp2),
-                new WaitCommand(450),
-                new InstantCommand(() -> Mosby.intake.setPower(0)),
-
-                new InstantCommand(() -> {
-                    Mosby.drivetrain.follower.setMaxPower(1);
-                    //Mosby.intake.setPower(0.5);
-                    //Mosby.intake.setMinPower(0.5);
-                }),
-                new FollowPathCommand(Mosby.drivetrain.follower, paths.shootgpp),
                 Mosby.prime(),
                 new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
                 Mosby.shootWithIntake(),
@@ -70,18 +49,36 @@ public class BaryonsAutoRed extends CommandOpMode {
                 Mosby.shootWithIntake(),
                 Mosby.reset(),
 
-                new InstantCommand(() -> Mosby.intake.setPower(1)),
-                new FollowPathCommand(Mosby.drivetrain.follower, paths.gatePickup),
+                new InstantCommand(() -> {
+                    Mosby.drivetrain.follower.setMaxPower(1);
+                    Mosby.intake.setPower(1);
+                }),
+                new FollowPathCommand(Mosby.drivetrain.follower, paths.intakepgp1),
                 new WaitCommand(200),
-                new FollowPathCommand(Mosby.drivetrain.follower, paths.gateCheckBack),
-                new FollowPathCommand(Mosby.drivetrain.follower, paths.gateCheckForward),
+                new FollowPathCommand(Mosby.drivetrain.follower, paths.checkIntakepgp1),
+                new FollowPathCommand(Mosby.drivetrain.follower, paths.intakepgp1again),
                 new WaitCommand(200),
                 new InstantCommand(() -> {
                     Mosby.intake.setPower(0);
                     Mosby.drivetrain.follower.setMaxPower(1);
                 }),
 
-                new FollowPathCommand(Mosby.drivetrain.follower, paths.shootGateCheck),
+                new FollowPathCommand(Mosby.drivetrain.follower, paths.shootpgp),
+                Mosby.prime(),
+                new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
+                Mosby.shootWithIntake(),
+                Mosby.reset(),
+                new FollowPathCommand(Mosby.drivetrain.follower, paths.intakepgp1),
+                new WaitCommand(200),
+                new FollowPathCommand(Mosby.drivetrain.follower, paths.checkIntakepgp1),
+                new FollowPathCommand(Mosby.drivetrain.follower, paths.intakepgp1again),
+                new WaitCommand(200),
+                new InstantCommand(() -> {
+                    Mosby.intake.setPower(0);
+                    Mosby.drivetrain.follower.setMaxPower(1);
+                }),
+
+                new FollowPathCommand(Mosby.drivetrain.follower, paths.shootpgp),
                 Mosby.prime(),
                 new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
                 Mosby.shootWithIntake(),
@@ -121,3 +118,4 @@ public class BaryonsAutoRed extends CommandOpMode {
         telemetry.update();
     }
 }
+

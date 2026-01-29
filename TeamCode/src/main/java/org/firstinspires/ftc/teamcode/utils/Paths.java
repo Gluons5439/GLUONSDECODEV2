@@ -22,7 +22,7 @@ public class Paths {
     public PathChain scorePPG;
     public PathChain park;
     public Pose startPose;// w
-    public Pose shootingPose = new Pose(67,19, Math.toRadians(180));
+    public Pose shootingPose = new Pose(60,19, Math.toRadians(180));
     public Pose intakeGPP1Pose = new Pose(42, 35, Math.toRadians(180));
     public Pose intakeGPP2Pose = new Pose(21.5, 35, intakeGPP1Pose.getHeading());
     public Pose openGatePose = new Pose(14, 75, intakeGPP1Pose.getHeading());
@@ -53,7 +53,7 @@ public class Paths {
     public PathChain shootpgp;
     public PathChain park2;
 
-    public Pose shootPose = new Pose(67,19, Math.toRadians(180));
+    public Pose shootPose = new Pose(54,19, Math.toRadians(180));
     public Pose intakegpp1Pose = new Pose(43, 34, Math.toRadians(180));
     public Pose intakegpp2Pose = new Pose(17, 34, intakegpp1Pose.getHeading());
     public Pose shootgppPose = new Pose(66,77, Math.toRadians(115));
@@ -65,7 +65,7 @@ public class Paths {
    //public Pose intakepgp2Pose = new Pose(13,8, intakeGPP1Pose.getHeading());
    //public Pose intakepgp3Pose = new Pose(9,8,intakeGPP1Pose.getHeading());
 
-   public Pose shootpgpPose = new Pose(66, 17, Math.toRadians(115) );
+   public Pose shootpgpPose = new Pose(63, 17, Math.toRadians(115) );
 
     public Pose park2Pose = new Pose(35, 9.5, intakegpp1Pose.getHeading());
 
@@ -85,20 +85,20 @@ public class Paths {
 
     public PathChain turn1;
 
-    public Pose CloseshootPose = new Pose(58,85, Math.toRadians(180));
+    public Pose CloseshootPose = new Pose(50,85, Math.toRadians(180));
     public Pose CloseintakePPGPose = new Pose(18, 85, Math.toRadians(180));
     public Pose CloseintakePGPPose = new Pose(19, 58, Math.toRadians(180));
     public Pose CloseIntakePGPControl = new Pose(63, 53);
-    public Pose CloseshootPGPPose = new Pose(63,77, Math.toRadians(200));
+    public Pose CloseshootPGPPose = new Pose(57,77, Math.toRadians(200));
     public Pose CloseintakeGPP1Pose = new Pose(45,36, Math.toRadians(180));
     public Pose CloseintakeGPP2Pose = new Pose(14,36, Math.toRadians(180));
-    public Pose CloseShootGPPPose = new Pose(63,77,Math.toRadians(220));
+    public Pose CloseShootGPPPose = new Pose(57,77,Math.toRadians(220));
     public Pose CloseparkPose = new Pose(31, 72, Math.toRadians(180));
 
 
     public Paths(Follower follower, Mosby.Alliance alliance) {
         startPose = Mosby.startPose;
-        if (alliance == Mosby.Alliance.RED) {
+        if (alliance == Mosby.Alliance.RED || alliance == Mosby.Alliance.REDCLOSE) {
             shootingPose = shootingPose.mirror();
             intakeGPP1Pose = intakeGPP1Pose.mirror();
             intakeGPP2Pose = intakeGPP2Pose.mirror();
@@ -117,6 +117,22 @@ public class Paths {
             intakegpp2Pose = intakegpp2Pose.mirror();
             intakepgp1Pose = intakepgp1Pose.mirror();
             shootpgpPose = shootpgpPose.mirror();
+            checkBackintakepgp1Pose = checkBackintakepgp1Pose.mirror();
+            gateToPick = gateToPick.mirror();
+            gateCheck = gateCheck.mirror();
+
+
+            CloseshootPose = CloseshootPose.mirror();
+            CloseintakePPGPose = CloseintakePPGPose.mirror();
+            CloseintakePGPPose = CloseintakePGPPose.mirror();
+            CloseIntakePGPControl = CloseIntakePGPControl.mirror();
+            CloseshootPGPPose = CloseshootPGPPose.mirror();
+            CloseintakeGPP1Pose = CloseintakeGPP1Pose.mirror();
+            CloseintakeGPP2Pose = CloseintakeGPP2Pose.mirror();
+            CloseShootGPPPose = CloseShootGPPPose.mirror();
+            CloseparkPose = CloseparkPose.mirror();
+
+
 
 
 

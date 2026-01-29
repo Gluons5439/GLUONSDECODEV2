@@ -40,7 +40,7 @@ public class Mosby {
     public static final Vector2d BLUE_GOALPIDF = new Vector2d(16.5, 132);
     public static final Vector2d RED_GOALPIDF = new Vector2d(127.5, 132);
     public static final Vector2d BLUE_GOAL = new Vector2d(0, 144);
-    public static final Vector2d RED_GOAL = new Vector2d(144, 144);
+    public static final Vector2d RED_GOAL = new Vector2d(140, 144);
     public static MatchState matchState;
     public static Alliance alliance;
     public static Drivetrain drivetrain;

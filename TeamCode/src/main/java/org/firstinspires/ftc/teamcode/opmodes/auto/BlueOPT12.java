@@ -42,6 +42,7 @@ public class BlueOPT12 extends CommandOpMode {
 
                 new FollowPathCommand(Mosby.drivetrain.follower, paths.ClosescorePPG),
                 Mosby.prime(),
+                new WaitCommand(500),
                 new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
                 Mosby.shootWithIntake(),
                 Mosby.reset(),

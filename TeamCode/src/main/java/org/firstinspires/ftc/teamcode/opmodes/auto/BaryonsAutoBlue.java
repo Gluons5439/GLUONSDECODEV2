@@ -75,12 +75,11 @@ public class BaryonsAutoBlue extends CommandOpMode {
                 new WaitCommand(200),
                 new FollowPathCommand(Mosby.drivetrain.follower, paths.gateCheckBack),
                 new FollowPathCommand(Mosby.drivetrain.follower, paths.gateCheckForward),
-                new WaitCommand(200),
+                //new WaitCommand(200),
                 new InstantCommand(() -> {
                     Mosby.intake.setPower(0);
-                    Mosby.drivetrain.follower.setMaxPower(1);
+                    Mosby.drivetrain.follower.setMaxPower(0.8);
                 }),
-
                 new FollowPathCommand(Mosby.drivetrain.follower, paths.shootGateCheck),
                 Mosby.prime(),
                 new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
