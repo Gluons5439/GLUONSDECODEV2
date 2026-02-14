@@ -1,1 +1,1 @@
-This is the repository for Team 5439 Gluons FTC Decode season. Also included in this repository is the Scarlet motion library.
+This is the repository for Team 5439 Gluons FTC Decode season. 
