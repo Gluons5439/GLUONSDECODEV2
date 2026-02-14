@@ -1,3 +1,4 @@
+
 package org.firstinspires.ftc.teamcode.utils.subsystems;
 
 import static com.seattlesolvers.solverslib.util.MathUtils.clamp;
@@ -101,7 +102,7 @@ public class Shooter extends SubsystemBase {
 
 
         shooterBlah = false;
-      distance = Math.hypot(Mosby.goalShooter.getX()-Storage.pose.getX(),Mosby.goalShooter.getY()-Storage.pose.getY());
+        distance = Math.hypot(Mosby.goalShooter.getX()-Storage.pose.getX(),Mosby.goalShooter.getY()-Storage.pose.getY());
 
 
     }
@@ -115,17 +116,17 @@ public class Shooter extends SubsystemBase {
         pos = Mosby.drivetrain.follower.getPose();
 
         distance = Math.hypot(
-               Mosby.goalShooter.getX() - pos.getX(),
-               Mosby.goalShooter.getY() - pos.getY()
+                Mosby.goalShooter.getX() - pos.getX(),
+                Mosby.goalShooter.getY() - pos.getY()
         );
 
         double currentVelocity = getVelocity();
-       double targetVelocity = lutVelocity.get(distance);
+        double targetVelocity = lutVelocity.get(distance);
 
         controller.setSetPoint(targetVelocity);
 
-       power = controller.calculate(currentVelocity);
-       setPower(power);
+        power = controller.calculate(currentVelocity);
+        setPower(power);
     }
 
 
@@ -139,7 +140,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public double getVelocity() {
-        return shooter1.getCorrectedVelocity();
+        return -shooter1.getCorrectedVelocity();
     }
 
     public void setPower(double power) {

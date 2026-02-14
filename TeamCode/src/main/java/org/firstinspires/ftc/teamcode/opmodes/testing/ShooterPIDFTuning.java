@@ -14,9 +14,9 @@ public class ShooterPIDFTuning extends OpMode {
 
     // ======= TUNABLES (LIVE VIA DASHBOARD / PANELS) =======
     public static double P = 0.001;
-    public static double F = 0.00039;
+    public static double F = 0.000385;
 
-    public static double TARGET_VELOCITY = 2000; // ticks/sec
+    public static double TARGET_VELOCITY = 1600; // ticks/sec
     public static boolean SHOOTER_ON = false;
     public static double INTAKE_POWER = 0;
 
@@ -35,10 +35,13 @@ public class ShooterPIDFTuning extends OpMode {
         shooter2 = new Motor(hardwareMap, "shooterMotor2", Motor.GoBILDA.BARE);
         intake = new Motor(hardwareMap, "Intake", Motor.GoBILDA.RPM_1150);
 
-       // shooter1.setInverted(true);
+       shooter1.setInverted(true);
 
         shooter1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         shooter2.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+
+        //shooter1.setInverted(true);
+        //shooter2.setInverted(true);
 
         controller = new PIDFController(P, 0, 0, F);
         controller.setTolerance(50);
@@ -86,7 +89,7 @@ public class ShooterPIDFTuning extends OpMode {
     }
 
     private void setPower(double power) {
-        shooter1.set(power);
+        shooter1.set(-power);
         shooter2.set(power);
     }
 }

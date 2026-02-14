@@ -13,9 +13,9 @@ import org.firstinspires.ftc.teamcode.utils.Storage;
 @Configurable
 public class Turret extends SubsystemBase {
     public Motor motor;
-    public double ticksPerRadian = 311.360120335;
+    public double ticksPerRadian = 222.57818791402;
     public static double p = 3;//3
-    public static double d = .04;//0.03
+    public static double d = .03;//0.03
     public PIDFController controller = new PIDFController(p, 0, d, 0);
     public double tolerance = 1;
 
@@ -23,7 +23,7 @@ public class Turret extends SubsystemBase {
     public boolean AUTOenableAim = false;
     public double homePos = 0;
     public Turret(HardwareMap hMap) {
-        motor = new Motor(hMap, "turretMotor", Motor.GoBILDA.RPM_223);
+        motor = new Motor(hMap, "turretMotor", Motor.GoBILDA.RPM_312);
         motor.stopAndResetEncoder();
         motor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         motor.setInverted(false);

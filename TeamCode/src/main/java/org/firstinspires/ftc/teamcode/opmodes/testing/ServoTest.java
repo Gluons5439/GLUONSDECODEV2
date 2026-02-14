@@ -9,14 +9,18 @@ import com.qualcomm.robotcore.hardware.Servo;
 @TeleOp
 public class ServoTest extends OpMode {
     Servo servo;
-    public static double pos = 0.5;
+    Servo servo2;
+    public static double pos = 0;
+    public static double pos2=0;
     @Override
     public void init() {
-        servo = hardwareMap.get(Servo.class, "stopper");
+        servo = hardwareMap.get(Servo.class, "StopperServo");
+        servo2 = hardwareMap.get(Servo.class, "HoodServo");
     }
 
     @Override
     public void loop() {
         servo.setPosition(pos);
+        servo2.setPosition(pos2);
     }
 }

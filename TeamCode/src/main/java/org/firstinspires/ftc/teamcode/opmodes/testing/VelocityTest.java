@@ -15,8 +15,8 @@ public class VelocityTest extends CommandOpMode {
     public static double hood;
     public static double velo = 0;
 
-    public static double P = 0.000005;
-    public static double F = 0.000385;
+    public static double P = 0.001;
+    public static double F = 0.00038;
 
     JoinedTelemetry tele;
 
