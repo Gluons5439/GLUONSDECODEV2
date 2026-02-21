@@ -58,6 +58,7 @@ public class Blue9Ball extends CommandOpMode {
                 Mosby.drivetrain.follower.setMaxPower(0.6);
                 Mosby.intake.setPower(0.5);
                 Mosby.intake.setMinPower(0.5);
+
             }),
             new FollowPathCommand(Mosby.drivetrain.follower, paths.scorePGP),
 

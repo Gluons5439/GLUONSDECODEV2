@@ -85,7 +85,7 @@ public class ShooterPIDFTuning extends OpMode {
     }
 
     private double getVelocity() {
-        return -shooter1.getCorrectedVelocity();
+        return -shooter2.getCorrectedVelocity();
     }
 
     private void setPower(double power) {

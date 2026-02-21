@@ -51,9 +51,13 @@ public class TeleOp extends CommandOpMode {
 
         aaryan.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                 .whenPressed(shootWithIntake);
+        aaryan.getGamepadButton(GamepadKeys.Button.Y)
+                .whenPressed(new InstantCommand(() -> {
+            Mosby.shooter.autoPower(true, false);
+        }) );
         rishi.getGamepadButton(GamepadKeys.Button.B)
                 .whenPressed(new InstantCommand(() -> {
-                    if(Storage.alliance == Mosby.Alliance.BLUE) {
+                    if(Storage.alliance == Mosby.Alliance.BLUE || Storage.alliance == Mosby.Alliance.BLUESQ) {
                         Pose b = new Pose(135.5, 7.8125, Math.toRadians(90));
                         Mosby.drivetrain.follower.setPose(b);
                         Storage.pose = b;
@@ -152,9 +156,11 @@ public class TeleOp extends CommandOpMode {
         Mosby.intake.setPower(intakePower);
 
 
+
         telemetry.addData("error", Mosby.shooter.controller.getPositionError());
         telemetry.addData("position", Mosby.drivetrain.follower.getPose().getX());
         telemetry.addData("position", Mosby.drivetrain.follower.getPose().getY());
+        telemetry.addData("heading", Mosby.drivetrain.follower.getPose().getHeading());
         telemetry.addData("goal", Mosby.goalShooter.getX());
         telemetry.addData("goal", Mosby.goalShooter.getY());
         telemetry.addData("distance", Mosby.shooter.distance);

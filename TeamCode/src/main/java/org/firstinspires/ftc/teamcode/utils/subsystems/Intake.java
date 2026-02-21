@@ -63,6 +63,9 @@ public class Intake extends SubsystemBase {
     {
         this.power = power;
     }
+    public void setPower(double power, double time) {
+
+    }
 
 
     public void forceIntake() {

@@ -30,16 +30,21 @@ public class Mosby {
         BLUE,
 
         REDCLOSE,
-        BLUECLOSE
+        BLUECLOSE,
+        BLUESQ,
+
+        REDSQ
     }
 
     public static final Pose BLUE_START_POSE = new Pose(64, 8, Math.toRadians(90));
+    public static final Pose BLUE_SQ_START_POSE = new Pose(33, 135, Math.toRadians(90));
+    public static final Pose RED_SQ_START_POSE = new Pose(144-BLUE_SQ_START_POSE.getX(), BLUE_SQ_START_POSE.getY(), Math.toRadians(90));
     public static final Pose CLOSE_BLUE_START_POSE = new Pose(21, 123, Math.toRadians(144));
     public static final Pose RED_START_POSE = new Pose(144-BLUE_START_POSE.getX(), BLUE_START_POSE.getY(), Math.toRadians(90));
     public static final Pose CLOSE_RED_START_POSE = new Pose(144-CLOSE_BLUE_START_POSE.getX(), CLOSE_BLUE_START_POSE.getY(), Math.toRadians(36));
     public static final Vector2d BLUE_GOALPIDF = new Vector2d(16.5, 132);
     public static final Vector2d RED_GOALPIDF = new Vector2d(127.5, 132);
-    public static final Vector2d BLUE_GOAL = new Vector2d(0, 144);
+    public static final Vector2d BLUE_GOAL = new Vector2d(2, 144);
     public static final Vector2d RED_GOAL = new Vector2d(140, 144);
     public static MatchState matchState;
     public static Alliance alliance;
@@ -87,6 +92,18 @@ public class Mosby {
                 Mosby.goal = BLUE_GOAL;
                 Mosby.goalShooter = BLUE_GOALPIDF;
                 break;
+
+            case BLUESQ:
+                Mosby.startPose = BLUE_SQ_START_POSE;
+                Mosby.goal = BLUE_GOAL;
+                Mosby.goalShooter = BLUE_GOALPIDF;
+                break;
+
+            case REDSQ:
+                Mosby.startPose = RED_SQ_START_POSE;
+                Mosby.goal = RED_GOAL;
+                Mosby.goalShooter = RED_GOALPIDF;
+                break;
         }
 
 
@@ -103,7 +120,7 @@ public class Mosby {
 
         CommandScheduler.getInstance().registerSubsystem(drivetrain, turret, intake, shooter);
 
-        CommandScheduler.getInstance().schedule(reset());
+        CommandScheduler.getInstance().schedule(reset1());
         turret.enableAim = false;
 
     }
@@ -116,6 +133,18 @@ public class Mosby {
     }
 
     public static InstantCommand reset() {
+        return new InstantCommand(() -> {
+            turret.enableAim = false;
+            turret.AUTOenableAim = false;
+            intake.setMinPower(0);
+            shooter.controller.reset();
+            shooter.autoPower(true, false);
+            shooter.setVelocity(Shooter.idleVeloMultiplier );
+            shooter.closeStopper();
+            shooter.resetHood();
+        });
+    }
+    public static InstantCommand reset1() {
         return new InstantCommand(() -> {
             turret.enableAim = false;
             turret.AUTOenableAim = false;
@@ -234,17 +263,17 @@ public class Mosby {
                                 }),
                                 new WaitCommand(100),
                                 new InstantCommand(() -> {
-                                    shooter.setCurrentHoodPercent(0.7);
+                                    shooter.setCurrentHoodPercent(0.8);
                                 }),
                                 new WaitCommand(150),
                                 new InstantCommand(() -> {
-                                    shooter.setCurrentHoodPercent(0.7);
+                                    shooter.setCurrentHoodPercent(0.8);
                                 }),
                                 new WaitCommand(130),
                                 new InstantCommand(() -> {
                                     shooter.hitTransfer();
                                 }),
-                                new WaitCommand(200),
+                                new WaitCommand(100),
                                 new InstantCommand(() -> {
                                     shooter.downTransfer();
                                     intake.setPower(0);

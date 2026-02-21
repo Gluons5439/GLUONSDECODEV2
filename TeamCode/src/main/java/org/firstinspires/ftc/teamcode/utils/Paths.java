@@ -5,6 +5,7 @@ import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.BezierPoint;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 
 public class Paths {
@@ -21,7 +22,7 @@ public class Paths {
     public PathChain intakePPG2;
     public PathChain scorePPG;
     public PathChain park;
-    public Pose startPose;// w
+    public Pose startPose;
     public Pose shootingPose = new Pose(60,19, Math.toRadians(180));
     public Pose intakeGPP1Pose = new Pose(42, 35, Math.toRadians(180));
     public Pose intakeGPP2Pose = new Pose(21.5, 35, intakeGPP1Pose.getHeading());
@@ -96,6 +97,7 @@ public class Paths {
     public Pose CloseparkPose = new Pose(31, 72, Math.toRadians(180));
 
 
+
     public Paths(Follower follower, Mosby.Alliance alliance) {
         startPose = Mosby.startPose;
         if (alliance == Mosby.Alliance.RED || alliance == Mosby.Alliance.REDCLOSE) {
@@ -147,6 +149,7 @@ public class Paths {
                         new BezierLine(startPose, shootingPose)
                 )
                 .setLinearHeadingInterpolation(startPose.getHeading(), shootingPose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
         intakeGPP1 = follower
@@ -155,6 +158,7 @@ public class Paths {
                         new BezierLine(shootingPose, intakeGPP1Pose)
                 )
                 .setLinearHeadingInterpolation(shootingPose.getHeading(), intakeGPP1Pose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
         intakeGPP2 = follower
@@ -163,6 +167,7 @@ public class Paths {
                         new BezierLine(intakeGPP1Pose, intakeGPP2Pose)
                 )
                 .setLinearHeadingInterpolation(intakeGPP1Pose.getHeading(), intakeGPP2Pose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
         scoreGPP = follower
@@ -171,6 +176,7 @@ public class Paths {
                         new BezierLine(intakeGPP2Pose, shootingPose)
                 )
                 .setLinearHeadingInterpolation(intakeGPP2Pose.getHeading(),shootingPose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
         intakePGP1 = follower
@@ -179,6 +185,7 @@ public class Paths {
                         new BezierLine(shootingPose, intakePGP1Pose)
                 )
                 .setLinearHeadingInterpolation(shootingPose.getHeading(), intakePGP1Pose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
         intakePGP2 = follower
@@ -187,6 +194,7 @@ public class Paths {
                         new BezierLine(intakePGP1Pose, intakePGP2Pose)
                 )
                 .setLinearHeadingInterpolation(intakePGP1Pose.getHeading(), intakePGP2Pose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
         scorePGP = follower
@@ -199,6 +207,7 @@ public class Paths {
                         )
                 )
                 .setLinearHeadingInterpolation(intakePGP2Pose.getHeading(),shootingPose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
         intakePPG1 = follower
@@ -209,6 +218,7 @@ public class Paths {
                 .setBrakingStrength(3.5)
 //                .setTimeoutConstraint(500)
                 .setLinearHeadingInterpolation(shootingPose.getHeading(), intakePPG1Pose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
         intakePPG2 = follower
@@ -217,6 +227,7 @@ public class Paths {
                         new BezierLine(intakePPG1Pose, intakePPG2Pose)
                 )
                 .setLinearHeadingInterpolation(intakePPG1Pose.getHeading(), intakePPG2Pose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
         scorePPG = follower
@@ -234,6 +245,7 @@ public class Paths {
                         new BezierLine(shootingPose, parkPose)
                 )
                 .setLinearHeadingInterpolation(shootingPose.getHeading(),parkPose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
 
@@ -258,6 +270,7 @@ public class Paths {
                         new BezierLine(startPose, shootPose)
                 )
                 .setLinearHeadingInterpolation(startPose.getHeading(), shootPose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
         intakegpp1 = follower
@@ -266,6 +279,7 @@ public class Paths {
                         new BezierLine(shootPose, intakegpp1Pose)
                 )
                 .setLinearHeadingInterpolation(shootPose.getHeading(), intakegpp1Pose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
         intakegpp2 = follower
@@ -274,6 +288,7 @@ public class Paths {
                         new BezierLine(intakegpp1Pose, intakegpp2Pose)
                 )
                 .setLinearHeadingInterpolation(intakegpp1Pose.getHeading(), intakegpp2Pose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
         shootgpp = follower
@@ -282,6 +297,7 @@ public class Paths {
                         new BezierLine(intakegpp2Pose, shootPose)
                 )
                 .setLinearHeadingInterpolation(intakegpp2Pose.getHeading(),shootPose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
         intakepgp1 = follower
@@ -290,6 +306,7 @@ public class Paths {
                         new BezierLine(shootPose, intakepgp1Pose)
                 )
                 .setLinearHeadingInterpolation(shootPose.getHeading(), intakepgp1Pose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
         checkIntakepgp1 = follower
                 .pathBuilder()
@@ -297,6 +314,7 @@ public class Paths {
                         new BezierLine(intakepgp1Pose, checkBackintakepgp1Pose)
                 )
                 .setLinearHeadingInterpolation(intakepgp1Pose.getHeading(), checkBackintakepgp1Pose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
         intakepgp1again = follower
                 .pathBuilder()
@@ -304,6 +322,7 @@ public class Paths {
                         new BezierLine(checkBackintakepgp1Pose, intakepgp1Pose)
                 )
                 .setLinearHeadingInterpolation(checkBackintakepgp1Pose.getHeading(), intakepgp1Pose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
 
@@ -323,6 +342,7 @@ public class Paths {
                         new BezierLine(shootPose, gateToPick)
                 )
                 .setLinearHeadingInterpolation(shootPose.getHeading(), gateToPick.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
         gateCheckBack = follower
                 .pathBuilder()
@@ -330,6 +350,7 @@ public class Paths {
                         new BezierLine(gateToPick, gateCheck)
                 )
                 .setLinearHeadingInterpolation(gateToPick.getHeading(), gateCheck.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
         gateCheckForward = follower
                 .pathBuilder()
@@ -337,6 +358,7 @@ public class Paths {
                         new BezierLine(gateCheck, gateToPick)
                 )
                 .setLinearHeadingInterpolation(gateCheck.getHeading(), gateToPick.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
         shootGateCheck = follower
                 .pathBuilder()
@@ -344,6 +366,7 @@ public class Paths {
                         new BezierLine(gateToPick, shootPose)
                 )
                 .setLinearHeadingInterpolation(gateToPick.getHeading(), shootPose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
 
@@ -357,6 +380,7 @@ public class Paths {
                         new BezierLine(shootPose, parkPose)
                 )
                 .setLinearHeadingInterpolation(shootPose.getHeading(),parkPose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
 
@@ -366,6 +390,7 @@ public class Paths {
                 .pathBuilder()
                 .addPath(new BezierLine(startPose, CloseshootPose))
                 .setLinearHeadingInterpolation(startPose.getHeading(), CloseshootPose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
 
@@ -373,6 +398,7 @@ public class Paths {
                 .pathBuilder()
                 .addPath(new BezierLine(CloseshootPose, CloseintakePPGPose))
                 .setLinearHeadingInterpolation(CloseshootPose.getHeading(), CloseintakePPGPose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
 
@@ -380,6 +406,7 @@ public class Paths {
                 .pathBuilder()
                 .addPath(new BezierLine(CloseintakePPGPose, CloseshootPose))
                 .setLinearHeadingInterpolation(CloseintakePPGPose.getHeading(), CloseshootPose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
 
@@ -387,6 +414,7 @@ public class Paths {
                 .pathBuilder()
                 .addPath(new BezierCurve(CloseshootPose, CloseIntakePGPControl, CloseintakePGPPose))
                 .setLinearHeadingInterpolation(CloseshootPose.getHeading(), CloseintakePGPPose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
 
@@ -401,6 +429,7 @@ public class Paths {
                 .pathBuilder()
                 .addPath(new BezierLine(CloseintakePGPPose, CloseshootPGPPose))
                 .setLinearHeadingInterpolation(CloseintakePGPPose.getHeading(), CloseshootPGPPose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
 
@@ -408,6 +437,7 @@ public class Paths {
                 .pathBuilder()
                 .addPath(new BezierLine(CloseshootPGPPose, CloseintakeGPP1Pose))
                 .setLinearHeadingInterpolation(CloseshootPGPPose.getHeading(), CloseintakeGPP1Pose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
 
@@ -415,6 +445,7 @@ public class Paths {
                 .pathBuilder()
                 .addPath(new BezierLine(CloseintakeGPP1Pose, CloseintakeGPP2Pose))
                 .setLinearHeadingInterpolation(CloseintakeGPP1Pose.getHeading(), CloseintakeGPP2Pose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
 
@@ -422,6 +453,7 @@ public class Paths {
                 .pathBuilder()
                 .addPath(new BezierLine(CloseintakeGPP2Pose, CloseShootGPPPose))
                 .setLinearHeadingInterpolation(CloseintakeGPP2Pose.getHeading(), CloseShootGPPPose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
 
@@ -429,6 +461,7 @@ public class Paths {
                 .pathBuilder()
                 .addPath(new BezierLine(CloseShootGPPPose, CloseparkPose))
                 .setLinearHeadingInterpolation(CloseShootGPPPose.getHeading(), CloseparkPose.getHeading())
+                .setBrakingStrength(1.22)
                 .build();
 
     }

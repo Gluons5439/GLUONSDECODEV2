@@ -4,7 +4,7 @@ import com.pedropathing.geometry.Pose;
 
 public class Storage {
     public static Pose pose = Mosby.BLUE_START_POSE;
-    public static double turretAngle = 0;
+    public static double turretAngle = Mosby.turret.getAngle();
     public static Mosby.Alliance alliance = Mosby.Alliance.BLUE;
 
 }
