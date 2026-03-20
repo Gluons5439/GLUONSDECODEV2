@@ -89,6 +89,7 @@ public class BlueOPT12 extends CommandOpMode {
                     Mosby.intake.setPower(0);
                     Mosby.intake.setMinPower(0);
                 }),
+                new InstantCommand(() ->Mosby.shooter.autoPower(false,false)),
                 new FollowPathCommand(Mosby.drivetrain.follower, paths.Closepark)
         ));
     }

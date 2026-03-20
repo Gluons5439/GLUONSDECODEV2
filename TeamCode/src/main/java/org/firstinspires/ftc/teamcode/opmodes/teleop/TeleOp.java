@@ -53,7 +53,7 @@ public class TeleOp extends CommandOpMode {
                 .whenPressed(shootWithIntake);
         aaryan.getGamepadButton(GamepadKeys.Button.Y)
                 .whenPressed(new InstantCommand(() -> {
-            Mosby.shooter.autoPower(true, false);
+            Mosby.shooter.autoPower(false, false);
         }) );
         rishi.getGamepadButton(GamepadKeys.Button.B)
                 .whenPressed(new InstantCommand(() -> {

@@ -42,6 +42,7 @@ public class RedOPT12 extends CommandOpMode {
 
                 new FollowPathCommand(Mosby.drivetrain.follower, paths.ClosescorePPG),
                 Mosby.prime(),
+                new WaitCommand(500),
                 new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
                 Mosby.shootWithIntake(),
                 Mosby.reset(),
@@ -88,6 +89,7 @@ public class RedOPT12 extends CommandOpMode {
                     Mosby.intake.setPower(0);
                     Mosby.intake.setMinPower(0);
                 }),
+                new InstantCommand(() ->Mosby.shooter.autoPower(false,false)),
                 new FollowPathCommand(Mosby.drivetrain.follower, paths.Closepark)
         ));
     }

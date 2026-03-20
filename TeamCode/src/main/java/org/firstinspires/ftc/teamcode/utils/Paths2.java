@@ -12,11 +12,10 @@ public class Paths2 {
     public PathChain ScorePre;
 
     public PathChain collect1;
-    public PathChain back1;
+    public PathChain openGate;
     public PathChain Score1;
 
     public PathChain collect2;
-    public PathChain back2;
     public PathChain score2;
 
     public PathChain collect3;
@@ -35,11 +34,9 @@ public class Paths2 {
     //public Pose opengate = new Pose(17.3, 69, Math.toRadians(270));
     public Pose shootload1 = new Pose(53, 80, Math.toRadians(180));
     public Pose collectgate1 = new Pose(13, 63, Math.toRadians(155));
-    public Pose backgate1 = new Pose(13,59,Math.toRadians(155));
     //public Pose collectcontrol1 = new Pose(52, 43);
     public Pose shootgate1 = new Pose(53, 80, Math.toRadians(180));
     public Pose collectgate2 = new Pose(13, 63.5,Math.toRadians(155));
-    public Pose backgate2 = new Pose(13,59,Math.toRadians(155));
     //public Pose collectcontrol2 = new Pose(52, 43);
     public Pose shootgate2 = new Pose(53, 80, Math.toRadians(180));
     public Pose intake2 = new Pose(20, 35, Math.toRadians(180));
@@ -84,10 +81,10 @@ public class Paths2 {
             //opengate = opengate.mirror();
             shootload1 = shootload1.mirror();
             collectgate1 = collectgate1.mirror();
-            backgate1 = backgate1.mirror();
+            //collectcontrol1 = collectcontrol1.mirror();
             shootgate1 = shootgate1.mirror();
             collectgate2 = collectgate2.mirror();
-            backgate2 = backgate2.mirror();
+            //collectcontrol2 = collectcontrol2.mirror();
             shootgate2 = shootgate2.mirror();
             intake2 = intake2.mirror();
             controlIntake2 = controlIntake2.mirror();

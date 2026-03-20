@@ -88,12 +88,12 @@ public class Paths {
 
     public Pose CloseshootPose = new Pose(50,85, Math.toRadians(180));
     public Pose CloseintakePPGPose = new Pose(18, 85, Math.toRadians(180));
-    public Pose CloseintakePGPPose = new Pose(19, 58, Math.toRadians(180));
+    public Pose CloseintakePGPPose = new Pose(19, 54, Math.toRadians(180));
     public Pose CloseIntakePGPControl = new Pose(63, 53);
-    public Pose CloseshootPGPPose = new Pose(57,77, Math.toRadians(200));
+    public Pose CloseshootPGPPose = new Pose(53,100, Math.toRadians(200));
     public Pose CloseintakeGPP1Pose = new Pose(45,36, Math.toRadians(180));
     public Pose CloseintakeGPP2Pose = new Pose(14,36, Math.toRadians(180));
-    public Pose CloseShootGPPPose = new Pose(57,77,Math.toRadians(220));
+    public Pose CloseShootGPPPose = new Pose(53,100,Math.toRadians(220));
     public Pose CloseparkPose = new Pose(31, 72, Math.toRadians(180));
 
 

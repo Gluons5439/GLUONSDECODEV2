@@ -51,7 +51,7 @@ public class Turret extends SubsystemBase {
             double targetAngle = Math.atan2(deltaY, deltaX);
 
             double robotAngle = Mosby.drivetrain.follower.getHeading();
-            setAngle(targetAngle - robotAngle);
+            setAngle(homePos); // targetAngle-robotAngle originally
         }else if(AUTOenableAim) {
             Pose pos = Mosby.drivetrain.follower.getPose();
 
@@ -61,7 +61,7 @@ public class Turret extends SubsystemBase {
             double targetAngle = Math.atan2(deltaY, deltaX);
 
             double robotAngle = Mosby.drivetrain.follower.getHeading();
-            setAngle(targetAngle - robotAngle);
+            setAngle(homePos); // targetAngle-robotAngle originally
         } else {
             setAngle(homePos);
 
