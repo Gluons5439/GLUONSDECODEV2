@@ -69,6 +69,8 @@ public class Shooter extends SubsystemBase {
         shooter1.setInverted(true);
         controller.setTolerance(TOLERANCE);
         controller.setSetPoint(0);
+        //Actual
+        /**
         lutVelocity.add(0, 1390);
         lutVelocity.add(30.5, 1420);
         lutVelocity.add(39.5, 1440);
@@ -94,6 +96,14 @@ public class Shooter extends SubsystemBase {
         lutHood.add(122.5, 0.3);
         lutHood.add(142.5, 0.33);
         lutHood.add(200, 0.35);
+         **/
+
+        //Velcoity for buisness
+        lutVelocity.add(-200, 1680);
+        lutVelocity.add(1000, 1680);
+        lutHood.add(-200, 0.26);
+        lutHood.add(1000, 0.26);
+
         lutVelocity.createLUT();
         lutHood.createLUT();
        pos = Mosby.drivetrain.follower.getPose();

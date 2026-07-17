@@ -219,9 +219,9 @@ public class Mosby {
         return new SequentialCommandGroup(
                 new WaitUntilCommand(() -> Mosby.shooter.controller.atSetPoint()),
                 new InstantCommand(() -> {
-                  //  turret.enableAim = true;
+                    turret.enableAim = true;
                     shooter.openStopper();
-                    //shooter.raiseHood();
+                    shooter.raiseHood();
                 }),
 
         new ConditionalCommand(
