@@ -24,9 +24,9 @@ public class Turret extends SubsystemBase {
     public boolean enableAim = false;
     public boolean AUTOenableAim = false;
     public double homePos = 0;
-    public double targetAngle =0;
+    public double leAngle =0;
     private static final double MIN_ANGLE = Math.toRadians(-130);
-    private static final double MAX_ANGLE = Math.toRadians(130);
+    private static final double MAX_ANGLE = Math.toRadians(175);
     public Turret(HardwareMap hMap) {
         motor = new Motor(hMap, "turretMotor", Motor.GoBILDA.RPM_312);
         motor.stopAndResetEncoder();
@@ -42,9 +42,9 @@ public class Turret extends SubsystemBase {
     }
 
     public void setAngle(double angle){
-        targetAngle = MathUtils.clamp(wrapToPi(angle),MIN_ANGLE, MAX_ANGLE);
+        leAngle = MathUtils.clamp(wrapToPi(angle),MIN_ANGLE, MAX_ANGLE);
 
-        controller.setSetPoint(angle);
+        controller.setSetPoint(leAngle);
     }
 
     public void update() {
