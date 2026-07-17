@@ -5,7 +5,9 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
+import com.seattlesolvers.solverslib.geometry.Vector2d;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
+import com.seattlesolvers.solverslib.util.MathUtils;
 
 import org.firstinspires.ftc.teamcode.utils.Mosby;
 import org.firstinspires.ftc.teamcode.utils.Storage;
@@ -22,6 +24,9 @@ public class Turret extends SubsystemBase {
     public boolean enableAim = false;
     public boolean AUTOenableAim = false;
     public double homePos = 0;
+    public double targetAngle =0;
+    private static final double MIN_ANGLE = Math.toRadians(-130);
+    private static final double MAX_ANGLE = Math.toRadians(130);
     public Turret(HardwareMap hMap) {
         motor = new Motor(hMap, "turretMotor", Motor.GoBILDA.RPM_312);
         motor.stopAndResetEncoder();
@@ -33,38 +38,21 @@ public class Turret extends SubsystemBase {
 
     public double getAngle(){
         double currentPos = motor.getCurrentPosition();
-        return (currentPos) / ticksPerRadian;
+        return wrapToPi((currentPos) / ticksPerRadian);
     }
 
     public void setAngle(double angle){
-        controller.setSetPoint(wrapToPi(angle));
+        targetAngle = MathUtils.clamp(wrapToPi(angle),MIN_ANGLE, MAX_ANGLE);
+
+        controller.setSetPoint(angle);
     }
 
     public void update() {
 
-        if(enableAim){
-            Pose pos = Mosby.drivetrain.follower.getPose();
-
-            double deltaX = Mosby.goal.getX() - pos.getX();
-            double deltaY = Mosby.goal.getY() - pos.getY();
-
-            double targetAngle = Math.atan2(deltaY, deltaX);
-
-            double robotAngle = Mosby.drivetrain.follower.getHeading();
-            setAngle(targetAngle-robotAngle + homePos); // homePos for Buisness but targetAngle-robotAngle + homePos For actual
-        }else if(AUTOenableAim) {
-            Pose pos = Mosby.drivetrain.follower.getPose();
-
-            double deltaX = Mosby.goalShooter.getX() - pos.getX();
-            double deltaY = Mosby.goalShooter.getY() - pos.getY();
-
-            double targetAngle = Math.atan2(deltaY, deltaX);
-
-            double robotAngle = Mosby.drivetrain.follower.getHeading();
-            setAngle(targetAngle-robotAngle + homePos); // homePos for Buisness but targetAngle-robotAngle + homePos For actual
+        if(enableAim || AUTOenableAim){
+           setAngle(calculateTargetAngle(Mosby.goalShooter));
         } else {
             setAngle(homePos);
-
         }
 
         controller.setP(p);
@@ -75,6 +63,19 @@ public class Turret extends SubsystemBase {
 
 
 
+    }
+
+    private double calculateTargetAngle(Vector2d goal)
+    {
+        Pose pos = Mosby.drivetrain.follower.getPose();
+
+        double deltaX = Mosby.goal.getX() - pos.getX();
+        double deltaY = Mosby.goal.getY() - pos.getY();
+
+        double targetAngle = Math.atan2(deltaY, deltaX);
+
+        double robotAngle = Mosby.drivetrain.follower.getHeading();
+        return wrapToPi(targetAngle-robotAngle + homePos); // homePos for Buisness but targetAngle-robotAngle + homePos For actual
     }
 
 
