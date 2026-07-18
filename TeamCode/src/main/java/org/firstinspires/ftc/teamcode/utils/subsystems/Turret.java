@@ -7,7 +7,6 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.geometry.Vector2d;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
-import com.seattlesolvers.solverslib.util.MathUtils;
 
 import org.firstinspires.ftc.teamcode.utils.Mosby;
 import org.firstinspires.ftc.teamcode.utils.Storage;
@@ -25,8 +24,8 @@ public class Turret extends SubsystemBase {
     public boolean AUTOenableAim = false;
     public double homePos = 0;
     public double leAngle =0;
-    private static final double MIN_ANGLE = Math.toRadians(-130);
-    private static final double MAX_ANGLE = Math.toRadians(175);
+    public static double MIN_ANGLE_DEGREES = -130;
+    public static double MAX_ANGLE_DEGREES = 230;
     public Turret(HardwareMap hMap) {
         motor = new Motor(hMap, "turretMotor", Motor.GoBILDA.RPM_312);
         motor.stopAndResetEncoder();
@@ -38,11 +37,35 @@ public class Turret extends SubsystemBase {
 
     public double getAngle(){
         double currentPos = motor.getCurrentPosition();
-        return wrapToPi((currentPos) / ticksPerRadian);
+        return currentPos / ticksPerRadian;
     }
 
     public void setAngle(double angle){
-        leAngle = MathUtils.clamp(wrapToPi(angle),MIN_ANGLE, MAX_ANGLE);
+        double minAngle = Math.toRadians(MIN_ANGLE_DEGREES);
+        double maxAngle = Math.toRadians(MAX_ANGLE_DEGREES);
+        double wrappedAngle = wrapToPi(angle);
+
+        // A wrapped target such as -170 degrees is physically the same as
+        // +190 degrees. Use whichever equivalent lies inside the safe range.
+        double[] equivalentAngles = {
+                wrappedAngle,
+                wrappedAngle + 2 * Math.PI,
+                wrappedAngle - 2 * Math.PI
+        };
+
+        for (double equivalentAngle : equivalentAngles) {
+            if (equivalentAngle >= minAngle && equivalentAngle <= maxAngle) {
+                leAngle = equivalentAngle;
+                controller.setSetPoint(leAngle);
+                return;
+            }
+        }
+
+        // The target is in the wire-protection deadzone. Stop at the nearest
+        // safe boundary instead of commanding the turret through that zone.
+        double distanceToMin = Math.abs(wrapToPi(wrappedAngle - minAngle));
+        double distanceToMax = Math.abs(wrapToPi(wrappedAngle - maxAngle));
+        leAngle = distanceToMin <= distanceToMax ? minAngle : maxAngle;
 
         controller.setSetPoint(leAngle);
     }
