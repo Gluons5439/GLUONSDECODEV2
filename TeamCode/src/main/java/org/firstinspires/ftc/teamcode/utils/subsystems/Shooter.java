@@ -19,15 +19,20 @@ import org.firstinspires.ftc.teamcode.utils.Storage;
 
 @Configurable
 public class Shooter extends SubsystemBase {
+    private static final double THROUGH_BORE_TICKS_PER_REVOLUTION = 8192.0;
+    private static final double SHOOTER_MAX_RPM = 6000.0;
+    private static final long VELOCITY_SAMPLE_WINDOW_NANOS = 50_000_000L;
+    private static final int VELOCITY_SAMPLE_CAPACITY = 128;
+
     public Motor shooter1;
     public Motor shooter2;
     public ServoEx hood;
     public ServoEx stopper;
     public ServoEx transfer;
 
-    public static double P = 0.001;//0.006 0.000389
+    public static double P = 0.0011;//0.006 0.000389
     public static double D = 0.0;
-    public static double F =0.000385;//0.0008
+    public static double F = 0.00022;//0.0008
     public PIDFController controller = new PIDFController(P, 0, D, F);
     public static double TOLERANCE = 50;
 
@@ -51,10 +56,22 @@ public class Shooter extends SubsystemBase {
     public double power;
     public boolean shooterBlah;
     public Pose pos;
+    private final int[] throughBoreSamplePositions =
+            new int[VELOCITY_SAMPLE_CAPACITY];
+    private final long[] throughBoreSampleTimesNanos =
+            new long[VELOCITY_SAMPLE_CAPACITY];
+    private int oldestThroughBoreSampleIndex;
+    private int throughBoreSampleCount;
+    private double filteredThroughBoreRpm;
     //double currentVelocity = 0;
 
     public Shooter(HardwareMap hMap) {
-        shooter1 = new Motor(hMap, "shooterMotor", Motor.GoBILDA.BARE);
+        shooter1 = new Motor(
+                hMap,
+                "shooterMotor",
+                THROUGH_BORE_TICKS_PER_REVOLUTION,
+                SHOOTER_MAX_RPM
+        );
         shooter2 = new Motor(hMap, "shooterMotor2", Motor.GoBILDA.BARE);
         //shooter1.setInverted(true);
         shooter1.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
@@ -70,19 +87,19 @@ public class Shooter extends SubsystemBase {
         controller.setTolerance(TOLERANCE);
         controller.setSetPoint(0);
         //Actual
-        /**
-        lutVelocity.add(0, 1390);
-        lutVelocity.add(30.5, 1420);
-        lutVelocity.add(39.5, 1440);
-        lutVelocity.add(48.5, 1480);
-        lutVelocity.add(58.5, 1540);
-        lutVelocity.add(71.5, 1540);
-        lutVelocity.add(86.5, 1640);
-        lutVelocity.add(96.5, 1680);
-        lutVelocity.add(111.5, 1800);
-        lutVelocity.add(122.5, 1880);
-        lutVelocity.add(142.5, 1960);
-        lutVelocity.add(200, 2080);
+
+        lutVelocity.add(0, 2978.571);
+        lutVelocity.add(30.5, 3042.857);
+        lutVelocity.add(39.5, 3085.714);
+        lutVelocity.add(48.5, 3171.429);
+        lutVelocity.add(58.5, 3300.0);
+        lutVelocity.add(71.5, 3300.0);
+        lutVelocity.add(86.5, 3514.286);
+        lutVelocity.add(96.5, 3600.0);
+        lutVelocity.add(111.5, 3857.143);
+        lutVelocity.add(122.5, 4028.571);
+        lutVelocity.add(142.5, 4200.0);
+        lutVelocity.add(200, 4457.143);
 
         lutHood.add(0, 0);
         lutHood.add(30.5, 0);
@@ -96,13 +113,15 @@ public class Shooter extends SubsystemBase {
         lutHood.add(122.5, 0.3);
         lutHood.add(142.5, 0.33);
         lutHood.add(200, 0.35);
-         **/
+
 
         //Velcoity for buisness
-        lutVelocity.add(-200, 1680);
-        lutVelocity.add(1000, 1680);
+        /**
+        lutVelocity.add(-200, 3600.0);
+        lutVelocity.add(1000, 3600.0);
         lutHood.add(-200, 0.26);
         lutHood.add(1000, 0.26);
+         **/
 
         lutVelocity.createLUT();
         lutHood.createLUT();
@@ -118,6 +137,10 @@ public class Shooter extends SubsystemBase {
     }
 
     public void update() {
+        sampleThroughBoreRpm();
+        controller.setP(P);
+        controller.setF(F);
+
         if (!shooterBlah) {
             controller.setSetPoint(0);
             setPower(0);
@@ -130,13 +153,67 @@ public class Shooter extends SubsystemBase {
                 Mosby.goalShooter.getY() - pos.getY()
         );
 
-        double currentVelocity = getVelocity();
-        double targetVelocity = lutVelocity.get(distance);
+        double targetRpm = lutVelocity.get(distance);
 
-        controller.setSetPoint(targetVelocity);
+        controller.setSetPoint(targetRpm);
 
-        power = controller.calculate(currentVelocity);
+        power = clamp(controller.calculate(filteredThroughBoreRpm), 0.0, 1.0);
         setPower(power);
+    }
+
+    private void sampleThroughBoreRpm() {
+        int currentPosition = shooter1.getCurrentPosition();
+        long currentSampleTimeNanos = System.nanoTime();
+        addThroughBoreSample(currentPosition, currentSampleTimeNanos);
+
+        long windowStartTimeNanos =
+                currentSampleTimeNanos - VELOCITY_SAMPLE_WINDOW_NANOS;
+
+        while (throughBoreSampleCount > 1) {
+            int nextSampleIndex =
+                    (oldestThroughBoreSampleIndex + 1)
+                            % VELOCITY_SAMPLE_CAPACITY;
+
+            if (throughBoreSampleTimesNanos[nextSampleIndex]
+                    > windowStartTimeNanos) {
+                break;
+            }
+
+            oldestThroughBoreSampleIndex = nextSampleIndex;
+            throughBoreSampleCount--;
+        }
+
+        long elapsedTimeNanos =
+                currentSampleTimeNanos
+                        - throughBoreSampleTimesNanos[oldestThroughBoreSampleIndex];
+
+        if (elapsedTimeNanos < VELOCITY_SAMPLE_WINDOW_NANOS) {
+            return;
+        }
+
+        int positionChange = currentPosition
+                - throughBoreSamplePositions[oldestThroughBoreSampleIndex];
+        filteredThroughBoreRpm = Math.abs(
+                positionChange * 60_000_000_000.0
+                        / elapsedTimeNanos
+                        / THROUGH_BORE_TICKS_PER_REVOLUTION
+        );
+    }
+
+    private void addThroughBoreSample(int position, long sampleTimeNanos) {
+        if (throughBoreSampleCount == VELOCITY_SAMPLE_CAPACITY) {
+            oldestThroughBoreSampleIndex =
+                    (oldestThroughBoreSampleIndex + 1)
+                            % VELOCITY_SAMPLE_CAPACITY;
+            throughBoreSampleCount--;
+        }
+
+        int newSampleIndex =
+                (oldestThroughBoreSampleIndex + throughBoreSampleCount)
+                        % VELOCITY_SAMPLE_CAPACITY;
+        throughBoreSamplePositions[newSampleIndex] = position;
+        throughBoreSampleTimesNanos[newSampleIndex] = sampleTimeNanos;
+        throughBoreSampleCount++;
     }
 
 
@@ -150,11 +227,11 @@ public class Shooter extends SubsystemBase {
     }
 
     public double getVelocity() {
-        return -shooter2.getCorrectedVelocity();
+        return filteredThroughBoreRpm;
     }
 
     public void setPower(double power) {
-        power = clamp(power, -1.0, 1.0);
+        power = clamp(power, 0.0, 1.0);
         shooter1.set(-power);
         shooter2.set(power);
     }
