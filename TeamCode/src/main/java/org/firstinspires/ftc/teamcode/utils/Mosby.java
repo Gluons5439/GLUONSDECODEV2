@@ -20,7 +20,8 @@ import org.firstinspires.ftc.teamcode.utils.subsystems.Turret;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Configurable
-public class Mosby {
+public class
+Mosby {
     public enum MatchState {
         AUTO,
         TELEOP
@@ -134,14 +135,13 @@ public class Mosby {
 
     public static InstantCommand reset() {
         return new InstantCommand(() -> {
-            turret.enableAim = false;
-            turret.AUTOenableAim = false;
+            turret.AUTOenableAim = true;
             intake.setMinPower(0);
             shooter.controller.reset();
-            shooter.autoPower(true, false);
-            shooter.setVelocity(Shooter.idleVeloMultiplier );
+            shooter.autoPower(false, true);
+            shooter.runIdle(2000);
             shooter.closeStopper();
-            shooter.resetHood();
+
         });
     }
     public static InstantCommand reset1() {

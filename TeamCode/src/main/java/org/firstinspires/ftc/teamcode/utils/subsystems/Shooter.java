@@ -19,8 +19,11 @@ import org.firstinspires.ftc.teamcode.utils.Storage;
 
 @Configurable
 public class Shooter extends SubsystemBase {
+    // shooter1's Through Bore encoder is 1:1 with the shooter: 8,192 ticks equals one revolution.
     private static final double THROUGH_BORE_TICKS_PER_REVOLUTION = 8192.0;
     private static final double SHOOTER_MAX_RPM = 6000.0;
+
+    // Calculate speed over at least 50 ms to reject single-loop encoder spikes.
     private static final long VELOCITY_SAMPLE_WINDOW_NANOS = 50_000_000L;
     private static final int VELOCITY_SAMPLE_CAPACITY = 128;
 
@@ -56,6 +59,8 @@ public class Shooter extends SubsystemBase {
     public double power;
     public boolean shooterBlah;
     public Pose pos;
+
+    // Fixed-size ring buffer keeps recent encoder samples without allocating objects every loop.
     private final int[] throughBoreSamplePositions =
             new int[VELOCITY_SAMPLE_CAPACITY];
     private final long[] throughBoreSampleTimesNanos =
@@ -63,9 +68,14 @@ public class Shooter extends SubsystemBase {
     private int oldestThroughBoreSampleIndex;
     private int throughBoreSampleCount;
     private double filteredThroughBoreRpm;
+
+    // Idle mode bypasses the distance LUT and holds a fixed RPM supplied by the caller.
+    private boolean idleMode;
+    private double idleTargetRpm;
     //double currentVelocity = 0;
 
     public Shooter(HardwareMap hMap) {
+        // shooter1 reads the Through Bore encoder; shooter2 mirrors the calculated motor power.
         shooter1 = new Motor(
                 hMap,
                 "shooterMotor",
@@ -86,7 +96,8 @@ public class Shooter extends SubsystemBase {
         shooter1.setInverted(true);
         controller.setTolerance(TOLERANCE);
         controller.setSetPoint(0);
-        //Actual
+        // All shooter LUT outputs are physical RPM, matching the PIDF setpoint and encoder measurement.
+        // These were converted from the old 28-tick motor velocity units.
 
         lutVelocity.add(0, 2978.571);
         lutVelocity.add(30.5, 3042.857);
@@ -117,15 +128,15 @@ public class Shooter extends SubsystemBase {
 
         //Velcoity for buisness
         /**
-        lutVelocity.add(-200, 3600.0);
-        lutVelocity.add(1000, 3600.0);
-        lutHood.add(-200, 0.26);
-        lutHood.add(1000, 0.26);
+         lutVelocity.add(-200, 3600.0);
+         lutVelocity.add(1000, 3600.0);
+         lutHood.add(-200, 0.26);
+         lutHood.add(1000, 0.26);
          **/
 
         lutVelocity.createLUT();
         lutHood.createLUT();
-       pos = Mosby.drivetrain.follower.getPose();
+        pos = Mosby.drivetrain.follower.getPose();
         controller.setP(P);
         controller.setF(F);
 
@@ -137,30 +148,46 @@ public class Shooter extends SubsystemBase {
     }
 
     public void update() {
+        // Sample even while stopped so the rolling RPM history is ready before spin-up.
         sampleThroughBoreRpm();
+
+        // Reapply tunable gains so dashboard changes take effect without restarting the OpMode.
         controller.setP(P);
         controller.setF(F);
 
-        if (!shooterBlah) {
+        // Recalculate distance and command the hood every loop, including while stopped or idling.
+        pos = Mosby.drivetrain.follower.getPose();
+        distance = Math.hypot(
+                Mosby.goalShooter.getX() - pos.getX(),
+                Mosby.goalShooter.getY() - pos.getY()
+        );
+        hood.set(lutHood.get(distance));
+
+        double targetRpm;
+
+        // Shooting uses the distance LUT; idle mode uses the caller's fixed RPM target.
+        if (shooterBlah) {
+            targetRpm = lutVelocity.get(distance);
+        } else if (idleMode) {
+            targetRpm = idleTargetRpm;
+        } else {
             controller.setSetPoint(0);
             setPower(0);
             return;
         }
-        pos = Mosby.drivetrain.follower.getPose();
-
-        distance = Math.hypot(
-               Mosby.goalShooter.getX() - pos.getX(),
-                Mosby.goalShooter.getY() - pos.getY()
-        );
-
-        double targetRpm = lutVelocity.get(distance);
 
         controller.setSetPoint(targetRpm);
 
+        // The PIDF setpoint and measurement are both RPM; output is safe forward motor power.
         power = clamp(controller.calculate(filteredThroughBoreRpm), 0.0, 1.0);
         setPower(power);
     }
 
+    /**
+     * Updates filtered RPM from Through Bore position change across a rolling time window.
+     * Keeping a sample at or before the 50 ms boundary prevents short-loop timing jitter
+     * from producing the false 700/2,000 RPM flashes seen with instantaneous velocity.
+     */
     private void sampleThroughBoreRpm() {
         int currentPosition = shooter1.getCurrentPosition();
         long currentSampleTimeNanos = System.nanoTime();
@@ -193,6 +220,8 @@ public class Shooter extends SubsystemBase {
 
         int positionChange = currentPosition
                 - throughBoreSamplePositions[oldestThroughBoreSampleIndex];
+
+        // Absolute position change reports speed in RPM regardless of encoder direction.
         filteredThroughBoreRpm = Math.abs(
                 positionChange * 60_000_000_000.0
                         / elapsedTimeNanos
@@ -200,6 +229,7 @@ public class Shooter extends SubsystemBase {
         );
     }
 
+    /** Adds one position/time sample and overwrites the oldest entry only if the buffer fills. */
     private void addThroughBoreSample(int position, long sampleTimeNanos) {
         if (throughBoreSampleCount == VELOCITY_SAMPLE_CAPACITY) {
             oldestThroughBoreSampleIndex =
@@ -218,25 +248,43 @@ public class Shooter extends SubsystemBase {
 
 
     public void setShooter(boolean s) {
+        // Explicit shooter commands leave fixed-RPM idle mode.
+        idleMode = false;
         shooterBlah = s;
+    }
+
+    /**
+     * Holds a fixed idle speed with the filtered Through Bore RPM and PIDF controller.
+     * Call autoPower(...) or setShooter(...) to leave idle mode.
+     *
+     * @param rpm requested idle speed, clamped from 0 to SHOOTER_MAX_RPM
+     */
+    public void runIdle(double rpm) {
+        shooterBlah = false;
+        idleMode = true;
+        idleTargetRpm = clamp(rpm, 0.0, SHOOTER_MAX_RPM);
     }
 
     public void setVelocity(double velocity) {
         controller.setSetPoint(velocity);
-       // currentVelocity = velocity;
+        // currentVelocity = velocity;
     }
 
+    /** Returns the latest filtered Through Bore speed in RPM. */
     public double getVelocity() {
         return filteredThroughBoreRpm;
     }
 
     public void setPower(double power) {
+        // Do not allow a PID overshoot to reverse the flywheel motors.
         power = clamp(power, 0.0, 1.0);
         shooter1.set(-power);
         shooter2.set(power);
     }
 
     public void autoPower(boolean shooterOn, boolean hoodOn) {
+        // Switching to normal shooting or off cancels fixed-RPM idle mode.
+        idleMode = false;
         shooterBlah = shooterOn;
 
         if (shooterOn) {

@@ -26,7 +26,14 @@ public class Turret extends SubsystemBase {
     public double leAngle =0;
     public static double MIN_ANGLE_DEGREES = -130;
     public static double MAX_ANGLE_DEGREES = 230;
+
+    // The motor encoder is reset whenever this subsystem is rebuilt. This offset keeps
+    // its zero aligned with the last physical turret angle saved in Storage.
+    private double encoderAngleOffsetRadians;
+
     public Turret(HardwareMap hMap) {
+        encoderAngleOffsetRadians = Storage.turretAngle;
+
         motor = new Motor(hMap, "turretMotor", Motor.GoBILDA.RPM_312);
         motor.stopAndResetEncoder();
         motor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
@@ -37,7 +44,8 @@ public class Turret extends SubsystemBase {
 
     public double getAngle(){
         double currentPos = motor.getCurrentPosition();
-        return currentPos / ticksPerRadian;
+        // Add the saved angle to movement measured since the encoder reset.
+        return encoderAngleOffsetRadians + currentPos / ticksPerRadian;
     }
 
     public void setAngle(double angle){
@@ -73,7 +81,7 @@ public class Turret extends SubsystemBase {
     public void update() {
 
         if(enableAim || AUTOenableAim){
-           setAngle(calculateTargetAngle(Mosby.goalShooter));
+            setAngle(calculateTargetAngle(Mosby.goalShooter));
         } else {
             setAngle(homePos);
         }

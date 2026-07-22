@@ -33,28 +33,18 @@ public class TeleOp extends CommandOpMode {
         GamepadEx aaryan = new GamepadEx(gamepad2);
 
         // Aaryan controls
-        aaryan.getGamepadButton(GamepadKeys.Button.B)
+        rishi.getGamepadButton(GamepadKeys.Button.X)
                 .whenPressed(prime);
-        aaryan.getGamepadButton(GamepadKeys.Button.A)
-                .whenPressed( new SequentialCommandGroup(
-                        new InstantCommand(() -> {
-                            prime.cancel();
-                            shoot.cancel();
-                            shootWithIntake.cancel();
 
-                        }),
-                        Mosby.reset()
-                ));
-
-        aaryan.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+        rishi.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .whenPressed(shoot);
 
-        aaryan.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
+        rishi.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                 .whenPressed(shootWithIntake);
-        aaryan.getGamepadButton(GamepadKeys.Button.Y)
+        rishi.getGamepadButton(GamepadKeys.Button.Y)
                 .whenPressed(new InstantCommand(() -> {
-            Mosby.shooter.autoPower(false, false);
-        }) );
+                    Mosby.reset();
+                }) );
         rishi.getGamepadButton(GamepadKeys.Button.B)
                 .whenPressed(new InstantCommand(() -> {
                     if(Storage.alliance == Mosby.Alliance.BLUE || Storage.alliance == Mosby.Alliance.BLUESQ) {
@@ -70,62 +60,7 @@ public class TeleOp extends CommandOpMode {
                 }) );
 
 
-/*
-        rishi.getGamepadButton(GamepadKeys.Button.CIRCLE)
-                .whenPressed(new SequentialCommandGroup(
-                        new InstantCommand(() -> {
-                            prime.cancel();
-                            shoot.cancel();
-                        }),
-                        Mosby.reset()
-                ));
 
-        rishi.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whenPressed(prime);
-
-        rishi.getGamepadButton(GamepadKeys.Button.CROSS)
-                .whenPressed(shoot);
-
-
-
-        aaryan.getGamepadButton(GamepadKeys.Button.CIRCLE)
-                .whenPressed(new SequentialCommandGroup(
-                        new InstantCommand(() -> {
-                            prime.cancel();
-                            shoot.cancel();
-                        }),
-                        Mosby.reset()
-                ));
-
-        aaryan.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whenPressed(prime);
-
-        aaryan.getGamepadButton(GamepadKeys.Button.CROSS)
-                .whenPressed(shoot);
-
-        aaryan.getGamepadButton(GamepadKeys.Button.SQUARE)
-                .whenPressed(new SequentialCommandGroup(
-                        new InstantCommand(() -> {
-                            Mosby.intake.setMinPower(-1);
-                            Mosby.intake.setPower(-1);
-                        }),
-                        new WaitCommand(150),
-                        new InstantCommand(() -> {
-                            Mosby.intake.setPower(1);
-                            Mosby.intake.setMinPower(1);
-                        }),
-                        new WaitCommand(150),
-                        new InstantCommand(() -> {
-                            Mosby.intake.setPower(0);
-                            Mosby.intake.setMinPower(0);
-                        })
-                ));
-
-        aaryan.getGamepadButton(GamepadKeys.Button.DPAD_UP)
-                .whenPressed(
-                        new InstantCommand(() -> Mosby.shooter.openStopper())
-                );
- **/
 
         aaryan.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(new InstantCommand(() -> {
             double pos = Mosby.turret.controller.getSetPoint();
@@ -136,6 +71,12 @@ public class TeleOp extends CommandOpMode {
             double pos = Mosby.turret.controller.getSetPoint();
             Mosby.turret.homePos = pos + increment;
         }));
+        // Redundant shooter stop: persist a zero-RPM idle target and cut power immediately.
+        rishi.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(new InstantCommand(() -> {
+            Mosby.shooter.runIdle(0);
+            Mosby.shooter.setPower(0);
+        }));
+
         aaryan.getGamepadButton(GamepadKeys.Button.SHARE).whenPressed(new InstantCommand(() -> {
             Mosby.init(hardwareMap, Mosby.MatchState.TELEOP, Storage.alliance);
         }));
