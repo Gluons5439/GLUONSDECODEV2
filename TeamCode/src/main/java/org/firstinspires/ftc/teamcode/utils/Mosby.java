@@ -222,6 +222,7 @@ Mosby {
                     shooter.openStopper();
                     shooter.raiseHood();
                 }),
+// pluh
 
         new ConditionalCommand(
                         new SequentialCommandGroup(
