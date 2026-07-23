@@ -72,6 +72,10 @@ public class Shooter extends SubsystemBase {
     // Idle mode bypasses the distance LUT and holds a fixed RPM supplied by the caller.
     private boolean idleMode;
     private double idleTargetRpm;
+
+    // Business mode holds a fixed hood position instead of using the distance LUT.
+    private boolean businessMode;
+    private double businessHoodPosition;
     //double currentVelocity = 0;
 
     public Shooter(HardwareMap hMap) {
@@ -161,7 +165,11 @@ public class Shooter extends SubsystemBase {
                 Mosby.goalShooter.getX() - pos.getX(),
                 Mosby.goalShooter.getY() - pos.getY()
         );
-        hood.set(lutHood.get(distance));
+        if (businessMode) {
+            hood.set(businessHoodPosition);
+        } else {
+            hood.set(lutHood.get(distance));
+        }
 
         double targetRpm;
 
@@ -248,6 +256,7 @@ public class Shooter extends SubsystemBase {
 
 
     public void setShooter(boolean s) {
+        businessMode = false;
         // Explicit shooter commands leave fixed-RPM idle mode.
         idleMode = false;
         shooterBlah = s;
@@ -260,9 +269,19 @@ public class Shooter extends SubsystemBase {
      * @param rpm requested idle speed, clamped from 0 to SHOOTER_MAX_RPM
      */
     public void runIdle(double rpm) {
+        businessMode = false;
         shooterBlah = false;
         idleMode = true;
         idleTargetRpm = clamp(rpm, 0.0, SHOOTER_MAX_RPM);
+    }
+
+    /** Holds a fixed RPM and hood position for close-range business shots. */
+    public void runBusinessMode(double rpm, double hoodPosition) {
+        shooterBlah = false;
+        idleMode = true;
+        idleTargetRpm = clamp(rpm, 0.0, SHOOTER_MAX_RPM);
+        businessMode = true;
+        businessHoodPosition = clamp(hoodPosition, HOOD_MIN, HOOD_MAX);
     }
 
     public void setVelocity(double velocity) {
@@ -283,6 +302,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void autoPower(boolean shooterOn, boolean hoodOn) {
+        businessMode = false;
         // Switching to normal shooting or off cancels fixed-RPM idle mode.
         idleMode = false;
         shooterBlah = shooterOn;

@@ -77,6 +77,19 @@ public class TeleOp extends CommandOpMode {
             Mosby.shooter.setPower(0);
         }));
 
+        // Business presets lock the turret at home and hold fixed shooter RPM/hood values.
+        rishi.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(new InstantCommand(() -> {
+            Mosby.turret.enableAim = false;
+            Mosby.turret.AUTOenableAim = false;
+            Mosby.shooter.runBusinessMode(3300, 0.22);
+        }));
+
+        rishi.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(new InstantCommand(() -> {
+            Mosby.turret.enableAim = false;
+            Mosby.turret.AUTOenableAim = false;
+            Mosby.shooter.runBusinessMode(4000, 0.30);
+        }));
+
         aaryan.getGamepadButton(GamepadKeys.Button.SHARE).whenPressed(new InstantCommand(() -> {
             Mosby.init(hardwareMap, Mosby.MatchState.TELEOP, Storage.alliance);
         }));
